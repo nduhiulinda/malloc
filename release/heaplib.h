@@ -7,6 +7,7 @@
 #define SUCCESS 1
 #define FAILURE 0
 
+
 /* Sets up a new heap beginning at 'heap' of size 'heap_size' (in
  * bytes).  This function does not allocate the heap (of size
  * heap_size) pointed to by heap. That should be done already by
@@ -20,7 +21,6 @@
  */
 int hl_init(void *heap, unsigned int heap_size);
 
-
 /* Allocates a block of memory of size block_size bytes from the heap starting
  * at 'heap'. Returns a pointer to the block on success; returns
  * 0 if the allocator cannot satisfy the request.
@@ -30,7 +30,6 @@ int hl_init(void *heap, unsigned int heap_size);
  * If preconditions are violated, non-graceful failure is acceptable.
  */
 void *hl_alloc(void *heap, unsigned int block_size);
-
 
 /* Releases the block of previously allocated memory pointed to by
  * block (which currently resides in the heap pointed to by

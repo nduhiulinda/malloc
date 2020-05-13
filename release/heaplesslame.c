@@ -123,6 +123,11 @@ int hl_init(void *heap, unsigned int heap_size) {
 	print_debug_entering_init();
 
     heap_header_t *header = (heap_header_t *)heap;
+
+	if (heap_size<MIN_HEAP_SIZE){
+		return FAILURE;
+	}
+
     header->heap_size = heap_size;
     
     for (i = 0; i < N_SUPPORTED_BLOCKS; i++) {
@@ -189,6 +194,7 @@ void hl_release(void *heap, void *block) {
 	print_debug_entering_release();
 	int i = find_block(header, block);
     header->in_use_f[i] = false;
+	//coalesce with neighbor
 }
 
 /* See the .h for the advertised behavior of this library function.

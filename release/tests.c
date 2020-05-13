@@ -186,13 +186,7 @@ int test03() {
  *
  */
 int test04() {
-    int i =HEAP_SIZE-200;
-    char heap[i];
- 
-    int heap_val=hl_init(heap, i);
-    if (heap_val==0){
-        return SUCCESS;
-    }
+    
     return FAILURE;
 }
 
@@ -267,18 +261,17 @@ int test07() {
  * FUNCTIONS BEING TESTED: hl_release & hl_alloc
  * SPECIFICATION BEING TESTED: if block is zero, acts as NOP
  *
- *
  * MANIFESTATION OF ERROR:
- *
  */
 int test08() {
     char heap[HEAP_SIZE];
     hl_init(heap, HEAP_SIZE);     
     int *block = hl_alloc(heap, 8);
-    if (block==0){
-        if ((int)hl_release(heap, block)==0){
-            return FAILURE;
-        }
+    heap_header_t *header = (heap_header_t *)heap;
+    int block_no = find_block(heap_header_t *header, void *block);
+    hl_release(heap, 0);
+    if (find_block(heap_header_t *header, void *block)!=block_no){
+        return FAILURE;
     }
     return SUCCESS;
 }
@@ -286,14 +279,20 @@ int test08() {
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:
- * SPECIFICATION BEING TESTED:
- *
+ * FUNCTIONS BEING TESTED: resize
+ * SPECIFICATION BEING TESTED: content of block should be preserved after resize
  *
  * MANIFESTATION OF ERROR:
  *
  */
 int test09() {
+    char heap[HEAP_SIZE];
+    hl_init(heap, HEAP_SIZE);     
+    int *block = hl_alloc(heap, 8);
+    heap_header_t *header = (heap_header_t *)heap;
+    void *hl_resize(heap, block, 16);
+    int block_no = find_block(heap_header_t *header, void *block);
+    header->blocks[block_no] 
 
     return FAILURE;
 }
@@ -301,8 +300,8 @@ int test09() {
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:
- * SPECIFICATION BEING TESTED:
+ * FUNCTIONS BEING TESTED: resize
+ * SPECIFICATION BEING TESTED: if block is NULL, allocate block
  *
  *
  * MANIFESTATION OF ERROR:
