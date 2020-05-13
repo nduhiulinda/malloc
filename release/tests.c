@@ -175,76 +175,112 @@ int test03() {
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:
+ * FUNCTIONS BEING TESTED:hl_init
  * SPECIFICATION BEING TESTED:
+ * size and block_info
  *
  *
  * MANIFESTATION OF ERROR:
+ * Error if size is less than MIN_HEAP_SIZE or block info is incorrect i.e. 
+ * block_size!=0 or block_pointer!=NULL or block is in use.
  *
  */
 int test04() {
-
+    int i =HEAP_SIZE-200;
+    char heap[i];
+ 
+    int heap_val=hl_init(heap, i);
+    if (heap_val==0){
+        return SUCCESS;
+    }
     return FAILURE;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:
+ * FUNCTIONS BEING TESTED:hl_alloc
  * SPECIFICATION BEING TESTED:
- *
- *
+ * block_size
+ * 
  * MANIFESTATION OF ERROR:
+ * Error if heap is not 8-byte aligned
  *
  */
 int test05() {
-
+ 
+    char heap[HEAP_SIZE+4];
+ 
+    hl_init((void*)heap+4, HEAP_SIZE);
+ 
+    int *array = hl_alloc(heap, 8);
+    if ((uintptr_t) array%8==0){
+        return SUCCESS;
+    }
     return FAILURE;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:
- * SPECIFICATION BEING TESTED:
+ * FUNCTIONS BEING TESTED: hl_alloc
+ * SPECIFICATION BEING TESTED: check if heap was initialized
  *
  *
- * MANIFESTATION OF ERROR:
+ * MANIFESTATION OF ERROR: 
+ * If heap was not initialized, return NULL(0)
  *
  */
 int test06() {
-
+    char heap[HEAP_SIZE];
+  
+    if (hl_alloc(heap, 8)==0){
+        return SUCCESS;
+    }
     return FAILURE;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:
- * SPECIFICATION BEING TESTED:
+ * FUNCTIONS BEING TESTED: hl_release & hl_alloc
+ * SPECIFICATION BEING TESTED: frees allocated block
  *
  *
  * MANIFESTATION OF ERROR:
+ * Fails if block is not released
  *
  */
 int test07() {
-
-    return FAILURE;
+    char heap[HEAP_SIZE];
+    hl_init(heap, HEAP_SIZE);     
+    int *block = hl_alloc(heap, 8);
+    if ((int)hl_release(heap, block)==0){
+        return FAILURE;
+    }
+    return SUCCESS;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:
- * SPECIFICATION BEING TESTED:
+ * FUNCTIONS BEING TESTED: hl_release & hl_alloc
+ * SPECIFICATION BEING TESTED: if block is zero, acts as NOP
  *
  *
  * MANIFESTATION OF ERROR:
  *
  */
 int test08() {
-
-    return FAILURE;
+    char heap[HEAP_SIZE];
+    hl_init(heap, HEAP_SIZE);     
+    int *block = hl_alloc(heap, 8);
+    if (block==0){
+        if ((int)hl_release(heap, block)==0){
+            return FAILURE;
+        }
+    }
+    return SUCCESS;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
