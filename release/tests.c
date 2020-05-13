@@ -201,7 +201,7 @@ int test04() {
  *
  * FUNCTIONS BEING TESTED:hl_alloc
  * SPECIFICATION BEING TESTED:
- * block_size
+ * heap
  * 
  *
  * MANIFESTATION OF ERROR:
