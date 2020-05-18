@@ -186,10 +186,10 @@ int test03() {
  */
 int test04() {
     char heap[HEAP_SIZE];
-    heap=ADD_BYTES(heap, 2);
+    int *heap= &heap + 2;
     hl_init((void*)heap, HEAP_SIZE);
     heap_header_t *header = (heap_header_t *)heap;
-    if ((uintptr_t)header%ALIGNMENT==0) && ((uintptr_t)header->blocks[0]->block_size%ALIGNMENT==0){
+    if (((uintptr_t)header%ALIGNMENT==0) && ((uintptr_t)header->blocks[0]->block_size%ALIGNMENT==0)){
         return SUCCESS;
     }
     return FAILURE;
@@ -250,15 +250,15 @@ int test06() {
  * Fails if block is not released
  *
  */
-// int test07() {
+int test07() {
 //     char heap[HEAP_SIZE];
 //     hl_init(heap, HEAP_SIZE);     
 //     int *block = hl_alloc(heap, 8);
 //     if ((int)hl_release(heap, block)==0){
 //         return FAILURE;
 //     }
-//     return SUCCESS;
-// }
+    return SUCCESS;
+}
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
@@ -268,7 +268,7 @@ int test06() {
  *
  * MANIFESTATION OF ERROR:
  */
-// int test08() {
+int test08() {
 //     char heap[HEAP_SIZE];
 //     hl_init(heap, HEAP_SIZE);     
 //     int *block = hl_alloc(heap, 8);
@@ -278,8 +278,8 @@ int test06() {
 //     if (find_block(heap_header_t *header, void *block)!=block_no){
 //         return FAILURE;
 //     }
-//     return SUCCESS;
-// }
+    return SUCCESS;
+}
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
@@ -290,7 +290,7 @@ int test06() {
  * MANIFESTATION OF ERROR:
  *
  */
-// int test09() {
+int test09() {
 //     char heap[HEAP_SIZE];
 //     hl_init(heap, HEAP_SIZE);     
 //     int *block = hl_alloc(heap, 8);
@@ -299,8 +299,8 @@ int test06() {
 //     int block_no = find_block(heap_header_t *header, void *block);
 //     header->blocks[block_no] 
 
-//     return FAILURE;
-// }
+    return FAILURE;
+}
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
@@ -312,7 +312,7 @@ int test06() {
  * MANIFESTATION OF ERROR:
  *
  */
-// int test10() {
+int test10() {
 //     char heap1[HEAP_SIZE];
 //     char heap2[HEAP_SIZE];
 //     hl_init(heap1, HEAP_SIZE);   
@@ -334,7 +334,8 @@ int test06() {
 //     }
      
 //     return (count==8);
-// }
+return FAILURE;
+}
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
