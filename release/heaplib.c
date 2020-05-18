@@ -52,15 +52,15 @@ int hl_init(void *heap, unsigned int heap_size) {
     header->heap_size = heap_size;
     //initialize first block metadata
     // header->blocks[0]->block_size = heap_size-(sizeof(heap_header_t));
-    block_info_t *block_head = ADD_BYTES(header, sizeof(heap_header_t));
-    header->blocks[0] = &block_head;
+    block_info_t *block_head = ADD_BYTES(heap, sizeof(heap_header_t));
+    (block_info_t *)header->blocks[0] = block_head;
     header->blocks[0].block_size = heap_size-(sizeof(heap_header_t));
     if ((uintptr_t)header->blocks[0].block_size%ALIGNMENT!=0){
         int rem = (uintptr_t)header->blocks[0].block_size%ALIGNMENT;
         header->blocks[0].block_size=header->blocks[0].block_size-rem;
     }
-    header->blocks[0]->allocated=0;
-    print_debug_heap_header(heap_header_t *header);
+    header->blocks[0].allocated=0;
+    print_debug_heap_header(header);
 
     return SUCCESS;
 }
