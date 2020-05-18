@@ -308,8 +308,27 @@ int test09() {
  *
  */
 int test10() {
+    char heap1[HEAP_SIZE];
+    char heap2[HEAP_SIZE];
+    hl_init(heap1, HEAP_SIZE);   
+    hl_init(heap2, HEAP_SIZE);    
+    int *block = hl_alloc(heap1, 8); 
+    int *block2 = NULL; 
+    void *hl_resize(heap2, block2, 8); 
+    heap_header_t *header1 = (heap_header_t *)heap1;
+    heap_header_t *header2 = (heap_header_t *)heap2; 
+    int count=0;
 
-    return FAILURE;
+    for (int i = 0; i < 8; i++){
+        if ((header1->blocks[i].block==header2->blocks[i].block) && header1->in_use_f[i]==header2->in_use_f[i]){
+            count++;
+        }
+        else{
+            break;
+        }   
+    }
+     
+    return (count==8);
 }
 
 /* Find something that you think heaplame does wrong. Make a test

@@ -7,6 +7,21 @@
 #define SUCCESS 1
 #define FAILURE 0
 
+#define ADD_BYTES(base_addr, num_bytes) (((char *)(base_addr)) + (num_bytes))
+
+typedef struct _block_info_t {
+    unsigned int block_size;
+    void *block;
+    unsigned int valid_bit;
+} block_info_t;
+
+typedef struct _heap_header_t {
+	unsigned int heap_size;
+    unsigned int free_heap_size;
+    block_info_t blocks[0];
+    bool in_use_f[0];
+} heap_header_t ;
+
 
 /* Sets up a new heap beginning at 'heap' of size 'heap_size' (in
  * bytes).  This function does not allocate the heap (of size
