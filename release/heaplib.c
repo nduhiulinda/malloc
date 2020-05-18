@@ -24,6 +24,26 @@ volatile lock_t malloc_lock = {.pthread_lock = PTHREAD_MUTEX_INITIALIZER};
  * YOUR COMMENTS GO HERE.
  */
 int hl_init(void *heap, unsigned int heap_size) {
+    
+    if (heap_size < MIN_HEAP_SIZE){
+        return FAILURE;
+    }
+    //ensure heap is 8-byte aligned
+    if (heap%ALIGNMENT!=0){
+        int rem = heap%ALIGNMENT;
+        heap=heap+rem;
+    }
+    //initialize heap metadata
+    heap_header_t *header = (heap_header_t *)heap;
+    header->heap_size = heap_size;
+    //initialize first block metadata
+    block_info_t *block_head = ADD_BYTES(header, sizeof(heap_header_t));
+    block_head->size = heap_size-(sizeof(int)+sizeof(_block_info_t));
+    if (block_head->size%ALIGNMENT!=0){
+        int rem = heap%ALIGNMENT;
+        block_head->size=block_head->size+rem;
+    }
+    block_head->allocated=0;
 
     return SUCCESS;
 }

@@ -11,15 +11,15 @@
 
 typedef struct _block_info_t {
     unsigned int block_size;
-    void *block;
-    unsigned int valid_bit;
+    // void *block;
+    unsigned int allocated;
 } block_info_t;
 
 typedef struct _heap_header_t {
 	unsigned int heap_size;
-    unsigned int free_heap_size;
+    // unsigned int free_heap_size;
     block_info_t blocks[0];
-    bool in_use_f[0];
+    // bool in_use_f[0];
 } heap_header_t ;
 
 
