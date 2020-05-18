@@ -177,16 +177,21 @@ int test03() {
  *
  * FUNCTIONS BEING TESTED:hl_init
  * SPECIFICATION BEING TESTED:
- * size and block_info
+ * alignment
  *
  *
  * MANIFESTATION OF ERROR:
- * Error if size is less than MIN_HEAP_SIZE or block info is incorrect i.e. 
- * block_size!=0 or block_pointer!=NULL or block is in use.
+ * 
  *
  */
 int test04() {
-    
+    char heap[HEAP_SIZE];
+    heap +=2;
+    hl_init_((void*)heap, HEAP_SIZE);
+    heap_header_t *header = (heap_header_t *)heap;
+    if (header%ALIGNMENT==0) && (header->blocks[0]->block_size%ALIGNMENT==0){
+        return SUCCESS;
+    }
     return FAILURE;
 }
 

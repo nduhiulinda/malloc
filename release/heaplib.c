@@ -16,12 +16,27 @@ volatile lock_t malloc_lock = {.riscv_lock = 0};
 volatile lock_t malloc_lock = {.pthread_lock = PTHREAD_MUTEX_INITIALIZER};
 #endif
 
+/**Prints 
+ * 
+ */
+ 
+void print_debug_heap_header(heap_header_t *header) {
+#ifdef PRINT_DEBUG
+    printf("heap starts at addr %p\n"   // C printing trick.
+		   "heap_size = %d\n",            // Notice: no commas between lines
+		   header, header->heap_size); 
 
+	printf("[%d] = [%d,%p,%d]\n", 0, header->blocks[0].block_size, header->blocks[0].allocated);
+
+	}
+#endif
+}
 
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.
  *
- * YOUR COMMENTS GO HERE.
+ * First checks if heap is 8-byte aligned. Aligns it if it's not.
+ * Initializes heap metadata and first block metadata
  */
 int hl_init(void *heap, unsigned int heap_size) {
     
@@ -31,19 +46,22 @@ int hl_init(void *heap, unsigned int heap_size) {
     //ensure heap is 8-byte aligned
     if (heap%ALIGNMENT!=0){
         int rem = heap%ALIGNMENT;
-        heap=heap+rem;
+        heap=heap+(ALIGNMENT-rem);
     }
     //initialize heap metadata
     heap_header_t *header = (heap_header_t *)heap;
     header->heap_size = heap_size;
     //initialize first block metadata
+    // header->blocks[0]->block_size = heap_size-(sizeof(heap_header_t));
     block_info_t *block_head = ADD_BYTES(header, sizeof(heap_header_t));
-    block_head->size = heap_size-(sizeof(int)+sizeof(_block_info_t));
-    if (block_head->size%ALIGNMENT!=0){
-        int rem = heap%ALIGNMENT;
-        block_head->size=block_head->size+rem;
+    header->blocks[0] = block_head;
+    header->blocks[0]->block_size = heap_size-(sizeof(heap_header_t));
+    if (header->blocks[0]->block_size%ALIGNMENT!=0){
+        int rem = header->blocks[0]->block_size%ALIGNMENT;
+        header->blocks[0]->block_size=header->blocks[0]->block_size-rem;
     }
-    block_head->allocated=0;
+    header->blocks[0]->allocated=0;
+    print_debug_heap_header(heap_header_t *header);
 
     return SUCCESS;
 }
