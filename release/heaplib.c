@@ -26,7 +26,7 @@ void print_debug_heap_header(heap_header_t *header) {
 		   "heap_size = %d\n",            // Notice: no commas between lines
 		   header, header->heap_size); 
 
-	printf("[%d] = [%d,%d,%d]\n", 0, header->blocks[0].block_size, header->blocks[0].allocated);
+	printf("block[%d] =[%d,%d]\n", 0, header->blocks[0].block_size, header->blocks[0].allocated);
 
 #endif
 }
