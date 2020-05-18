@@ -185,11 +185,11 @@ int test03() {
  *
  */
 int test04() {
-    char heap[HEAP_SIZE];
-    int *heap= &heap + 2;
+    char heap_arr[HEAP_SIZE];
+    int *heap= &heap_arr + 2;
     hl_init((void*)heap, HEAP_SIZE);
     heap_header_t *header = (heap_header_t *)heap;
-    if (((uintptr_t)header%ALIGNMENT==0) && ((uintptr_t)header->blocks[0]->block_size%ALIGNMENT==0)){
+    if (((uintptr_t)header%ALIGNMENT==0) && ((uintptr_t)header.blocks[0]->block_size%ALIGNMENT==0)){
         return SUCCESS;
     }
     return FAILURE;
