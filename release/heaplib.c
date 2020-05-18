@@ -53,7 +53,7 @@ int hl_init(void *heap, unsigned int heap_size) {
     //initialize first block metadata
     // header->blocks[0]->block_size = heap_size-(sizeof(heap_header_t));
     block_info_t *block_head = ADD_BYTES(heap, sizeof(heap_header_t));
-    (block_info_t *)header->blocks[0] = block_head;
+    &header->blocks[0] = block_head;
     header->blocks[0].block_size = heap_size-(sizeof(heap_header_t));
     if ((uintptr_t)header->blocks[0].block_size%ALIGNMENT!=0){
         int rem = (uintptr_t)header->blocks[0].block_size%ALIGNMENT;
