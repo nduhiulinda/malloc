@@ -26,9 +26,8 @@ void print_debug_heap_header(heap_header_t *header) {
 		   "heap_size = %d\n",            // Notice: no commas between lines
 		   header, header->heap_size); 
 
-	printf("[%d] = [%d,%p,%d]\n", 0, header->blocks[0].block_size, header->blocks[0].allocated);
+	printf("[%d] = [%d,%d,%d]\n", 0, header->blocks[0].block_size, header->blocks[0].allocated);
 
-	}
 #endif
 }
 
@@ -44,9 +43,9 @@ int hl_init(void *heap, unsigned int heap_size) {
         return FAILURE;
     }
     //ensure heap is 8-byte aligned
-    if (heap%ALIGNMENT!=0){
-        int rem = heap%ALIGNMENT;
-        heap=heap+(ALIGNMENT-rem);
+    if ((uintptr_t)heap%ALIGNMENT!=0){
+        int rem = (uintptr_t)heap%ALIGNMENT;
+        heap=ADD_BYTES(heap, (ALIGNMENT-rem));
     }
     //initialize heap metadata
     heap_header_t *header = (heap_header_t *)heap;
@@ -55,10 +54,10 @@ int hl_init(void *heap, unsigned int heap_size) {
     // header->blocks[0]->block_size = heap_size-(sizeof(heap_header_t));
     block_info_t *block_head = ADD_BYTES(header, sizeof(heap_header_t));
     header->blocks[0] = block_head;
-    header->blocks[0]->block_size = heap_size-(sizeof(heap_header_t));
-    if (header->blocks[0]->block_size%ALIGNMENT!=0){
-        int rem = header->blocks[0]->block_size%ALIGNMENT;
-        header->blocks[0]->block_size=header->blocks[0]->block_size-rem;
+    header->blocks[0].block_size = heap_size-(sizeof(heap_header_t));
+    if ((uintptr_t)header->blocks[0].block_size%ALIGNMENT!=0){
+        int rem = (uintptr_t)header->blocks[0].block_size%ALIGNMENT;
+        header->blocks[0].block_size=header->blocks[0].block_size-rem;
     }
     header->blocks[0]->allocated=0;
     print_debug_heap_header(heap_header_t *header);
