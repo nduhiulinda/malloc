@@ -186,10 +186,10 @@ int test03() {
  */
 int test04() {
     char heap[HEAP_SIZE];
-    heap +=2;
-    hl_init_((void*)heap, HEAP_SIZE);
+    heap=ADD_BYTES(heap, 2);
+    hl_init((void*)heap, HEAP_SIZE);
     heap_header_t *header = (heap_header_t *)heap;
-    if (header%ALIGNMENT==0) && (header->blocks[0]->block_size%ALIGNMENT==0){
+    if ((uintptr_t)header%ALIGNMENT==0) && ((uintptr_t)header->blocks[0]->block_size%ALIGNMENT==0){
         return SUCCESS;
     }
     return FAILURE;
@@ -250,15 +250,15 @@ int test06() {
  * Fails if block is not released
  *
  */
-int test07() {
-    char heap[HEAP_SIZE];
-    hl_init(heap, HEAP_SIZE);     
-    int *block = hl_alloc(heap, 8);
-    if ((int)hl_release(heap, block)==0){
-        return FAILURE;
-    }
-    return SUCCESS;
-}
+// int test07() {
+//     char heap[HEAP_SIZE];
+//     hl_init(heap, HEAP_SIZE);     
+//     int *block = hl_alloc(heap, 8);
+//     if ((int)hl_release(heap, block)==0){
+//         return FAILURE;
+//     }
+//     return SUCCESS;
+// }
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
@@ -268,18 +268,18 @@ int test07() {
  *
  * MANIFESTATION OF ERROR:
  */
-int test08() {
-    char heap[HEAP_SIZE];
-    hl_init(heap, HEAP_SIZE);     
-    int *block = hl_alloc(heap, 8);
-    heap_header_t *header = (heap_header_t *)heap;
-    int block_no = find_block(heap_header_t *header, void *block);
-    hl_release(heap, 0);
-    if (find_block(heap_header_t *header, void *block)!=block_no){
-        return FAILURE;
-    }
-    return SUCCESS;
-}
+// int test08() {
+//     char heap[HEAP_SIZE];
+//     hl_init(heap, HEAP_SIZE);     
+//     int *block = hl_alloc(heap, 8);
+//     heap_header_t *header = (heap_header_t *)heap;
+//     int block_no = find_block(heap_header_t *header, void *block);
+//     hl_release(heap, 0);
+//     if (find_block(heap_header_t *header, void *block)!=block_no){
+//         return FAILURE;
+//     }
+//     return SUCCESS;
+// }
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
@@ -290,17 +290,17 @@ int test08() {
  * MANIFESTATION OF ERROR:
  *
  */
-int test09() {
-    char heap[HEAP_SIZE];
-    hl_init(heap, HEAP_SIZE);     
-    int *block = hl_alloc(heap, 8);
-    heap_header_t *header = (heap_header_t *)heap;
-    void *hl_resize(heap, block, 16);
-    int block_no = find_block(heap_header_t *header, void *block);
-    header->blocks[block_no] 
+// int test09() {
+//     char heap[HEAP_SIZE];
+//     hl_init(heap, HEAP_SIZE);     
+//     int *block = hl_alloc(heap, 8);
+//     heap_header_t *header = (heap_header_t *)heap;
+//     void *hl_resize(heap, block, 16);
+//     int block_no = find_block(heap_header_t *header, void *block);
+//     header->blocks[block_no] 
 
-    return FAILURE;
-}
+//     return FAILURE;
+// }
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
@@ -312,29 +312,29 @@ int test09() {
  * MANIFESTATION OF ERROR:
  *
  */
-int test10() {
-    char heap1[HEAP_SIZE];
-    char heap2[HEAP_SIZE];
-    hl_init(heap1, HEAP_SIZE);   
-    hl_init(heap2, HEAP_SIZE);    
-    int *block = hl_alloc(heap1, 8); 
-    int *block2 = NULL; 
-    void *hl_resize(heap2, block2, 8); 
-    heap_header_t *header1 = (heap_header_t *)heap1;
-    heap_header_t *header2 = (heap_header_t *)heap2; 
-    int count=0;
+// int test10() {
+//     char heap1[HEAP_SIZE];
+//     char heap2[HEAP_SIZE];
+//     hl_init(heap1, HEAP_SIZE);   
+//     hl_init(heap2, HEAP_SIZE);    
+//     int *block = hl_alloc(heap1, 8); 
+//     int *block2 = NULL; 
+//     void *hl_resize(heap2, block2, 8); 
+//     heap_header_t *header1 = (heap_header_t *)heap1;
+//     heap_header_t *header2 = (heap_header_t *)heap2; 
+//     int count=0;
 
-    for (int i = 0; i < 8; i++){
-        if ((header1->blocks[i].block==header2->blocks[i].block) && header1->in_use_f[i]==header2->in_use_f[i]){
-            count++;
-        }
-        else{
-            break;
-        }   
-    }
+//     for (int i = 0; i < 8; i++){
+//         if ((header1->blocks[i].block==header2->blocks[i].block) && header1->in_use_f[i]==header2->in_use_f[i]){
+//             count++;
+//         }
+//         else{
+//             break;
+//         }   
+//     }
      
-    return (count==8);
-}
+//     return (count==8);
+// }
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
