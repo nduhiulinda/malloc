@@ -45,6 +45,12 @@ void print_debug_heap_header(heap_header_t *header) {
 #endif
 }
 
+void print_debug_alloc(void *block_addr) {
+#ifdef PRINT_DEBUG
+	printf("will give user block beginning @: %p\n", block_addr);
+#endif
+}
+
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.
  *
