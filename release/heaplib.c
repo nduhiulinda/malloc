@@ -162,6 +162,9 @@ void *hl_alloc(void *heap, unsigned int block_size) {
  * YOUR COMMENTS GO HERE.
  */
 void hl_release(void *heap, void *block) {
+    if (block==NULL){
+        return;
+    }
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
     int i = sizeof(heap_header_t);

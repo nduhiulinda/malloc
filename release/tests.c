@@ -268,13 +268,15 @@ int test06() {
  *
  */
 int test07() {
-//     char heap[HEAP_SIZE];
-//     hl_init(heap, HEAP_SIZE);     
-//     int *block = hl_alloc(heap, 8);
-//     if ((int)hl_release(heap, block)==0){
-//         return FAILURE;
-//     }
-    return SUCCESS;
+    char heap[HEAP_SIZE];
+    hl_init(heap, HEAP_SIZE);     
+    int *block1 = hl_alloc(heap, 8);
+    hl_release(heap, block1);
+    int *block2 = hl_alloc(heap, 8);
+    if (block1==block2){
+        return SUCCESS;
+    }
+    return FAILURE;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
