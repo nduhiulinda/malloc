@@ -204,9 +204,17 @@ int test03() {
  */
 int test04() {
     char heap[HEAP_SIZE];
-    int suc = hl_init((void*)heap+7, HEAP_SIZE);
-    heap_header_t *header = (heap_header_t *)heap;
-    if ( suc && ((uintptr_t)header%ALIGNMENT==0) && ((uintptr_t)header->blocks[0].block_size%ALIGNMENT==0)){
+
+    int *heap_ptr = (int*)heap;
+    uintptr_t addr = (uintptr_t) heap_ptr;    
+
+    if (addr % 8 == 0){
+        heap_ptr = (int*)ADD_BYTES(heap_ptr, 1);
+        }
+
+    hl_init(heap_ptr, HEAP_SIZE);
+    uintptr_t block = (uintptr_t) hl_alloc(heap_ptr, 13);
+    if (block%ALIGNMENT==0)){
         return SUCCESS;
     }
     return FAILURE;
@@ -294,12 +302,12 @@ int test08() {
     hl_alloc(heap, 8);
     hl_alloc(heap, 64);  
     hl_alloc(heap, 512); 
-    int *block = hl_alloc(heap, 448);
+    int *block = hl_alloc(heap, 800);
     hl_init(heap2, HEAP_SIZE); 
     hl_alloc(heap2, 8);
     hl_alloc(heap2, 64);  
     hl_alloc(heap2, 512); 
-    int *block2 = hl_alloc(heap2, 448);
+    int *block2 = hl_alloc(heap2, 800);
     heap_header_t *header = (heap_header_t *)heap;
     hl_release(heap, block);
     int i = sizeof(heap_header_t);
