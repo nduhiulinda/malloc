@@ -45,6 +45,17 @@ void print_debug_heap_header(heap_header_t *header) {
 #endif
 }
 
+void print_debug_block_header(block_info_t *header) {
+#ifdef PRINT_DEBUG
+    printf("block starts at addr %p\n"   // C printing trick.
+		   "block_size = %d\n",            // Notice: no commas between lines
+		   header, header->block_size); 
+
+	printf("block[%d] =[%d,%d]\n", 0, header->block_size, header->allocated);
+
+#endif
+}
+
 void print_debug_alloc(void *block_addr) {
 #ifdef PRINT_DEBUG
 	printf("will give user block beginning @: %p\n", block_addr);
@@ -131,6 +142,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
                 print_debug_alloc(curr_block);
+                print_debug_block_header(curr_block);
                 return curr_block;
             }
             i+=curr_block->block_size;
