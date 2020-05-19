@@ -9,6 +9,21 @@
 #define NUM_TESTS 24
 #define NPOINTERS 100
 
+#define ADD_BYTES(base_addr, num_bytes) (((void *)(base_addr)) + (num_bytes))
+
+typedef struct _block_info_t {
+    unsigned int block_size;
+    // void *block;
+    unsigned int allocated;
+} block_info_t;
+
+typedef struct _heap_header_t {
+	unsigned int heap_size;
+    // unsigned int free_heap_size;
+    block_info_t blocks[1];
+    // bool in_use_f[0];
+} heap_header_t ;
+
 // TODO: Add test descriptions as you add more tests...
 const char* test_descriptions[] = {
     /* our SPEC tests */
@@ -39,6 +54,8 @@ const char* test_descriptions[] = {
     /* 22 */ "your description here",
     /* 23 */ "your description here",
 };
+
+
 
 /* ------------------ COMPLETED SPEC TESTS ------------------------- */
 
