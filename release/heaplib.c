@@ -16,10 +16,24 @@ volatile lock_t malloc_lock = {.riscv_lock = 0};
 volatile lock_t malloc_lock = {.pthread_lock = PTHREAD_MUTEX_INITIALIZER};
 #endif
 
+#define ADD_BYTES(base_addr, num_bytes) (((void *)(base_addr)) + (num_bytes))
+
+typedef struct _block_info_t {
+    unsigned int block_size;
+    // void *block;
+    unsigned int allocated;
+} block_info_t;
+
+typedef struct _heap_header_t {
+	unsigned int heap_size;
+    // unsigned int free_heap_size;
+    block_info_t blocks[1];
+    // bool in_use_f[0];
+} heap_header_t ;
+
 /**Prints 
  * 
  */
- 
 void print_debug_heap_header(heap_header_t *header) {
 #ifdef PRINT_DEBUG
     printf("heap starts at addr %p\n"   // C printing trick.
