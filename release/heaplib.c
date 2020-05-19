@@ -127,7 +127,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     //         return first_block;
     //     }
     // } else{
-        block_info_t *curr_block = (block_info_t *)header->blocks[0];
+        block_info_t *curr_block = &header->blocks[0];
         while (i+block_size+j<header->heap_size){
 
             if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
@@ -146,7 +146,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 return curr_block;
             }
             i+=curr_block->block_size;
-            curr_block=&curr_block+curr_block->block_size;
+            curr_block=curr_block + curr_block->block_size;
         }
     // }
 		
