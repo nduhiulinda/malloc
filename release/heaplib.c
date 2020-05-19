@@ -62,6 +62,12 @@ void print_debug_alloc(void *block_addr) {
 #endif
 }
 
+void print_debug_sizeof(void *block_addr) {
+#ifdef PRINT_DEBUG
+	printf("sizeof heap_header @: %d\n", sizeof(block_addr));
+#endif
+}
+
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.
  *
@@ -92,6 +98,7 @@ int hl_init(void *heap, unsigned int heap_size) {
     }
     header->blocks[0].allocated=0;
     print_debug_heap_header(header);
+    print_debug_sizeof(header);
 
     return SUCCESS;
 }
@@ -144,6 +151,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 print_debug_alloc(curr_block);
                 print_debug_block_header(curr_block);
                 print_debug_heap_header(header);
+                print_debug_sizeof(header);
                 return curr_block;
             }
             i+=curr_block->block_size;
