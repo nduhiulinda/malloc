@@ -127,11 +127,11 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                     curr_block->block_size=curr_block->block_size-rem;
                 }
                 curr_block->allocated = 1;
-                block_info_t *new_block = curr_block + curr_block->block_size;
+                block_info_t *new_block = (uintptr_t)curr_block +  curr_block->block_size;
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
                 print_debug_alloc(curr_block);
-                return curr_block;
+                return  curr_block;
             }
             i+=curr_block->block_size;
             curr_block=curr_block + curr_block->block_size;
