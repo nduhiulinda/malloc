@@ -288,16 +288,32 @@ int test07() {
  * MANIFESTATION OF ERROR:
  */
 int test08() {
-//     char heap[HEAP_SIZE];
-//     hl_init(heap, HEAP_SIZE);     
-//     int *block = hl_alloc(heap, 8);
-//     heap_header_t *header = (heap_header_t *)heap;
-//     int block_no = find_block(heap_header_t *header, void *block);
-//     hl_release(heap, 0);
-//     if (find_block(heap_header_t *header, void *block)!=block_no){
-//         return FAILURE;
-//     }
-    return SUCCESS;
+    char heap[HEAP_SIZE];
+    char heap2[HEAP_SIZE];
+    hl_init(heap, HEAP_SIZE); 
+    hl_alloc(heap, 8);
+    hl_alloc(heap, 64);  
+    hl_alloc(heap, 512); 
+    int *block = hl_alloc(heap, 448);
+    hl_init(heap2, HEAP_SIZE); 
+    hl_alloc(heap2, 8);
+    hl_alloc(heap2, 64);  
+    hl_alloc(heap2, 512); 
+    int *block2 = hl_alloc(heap2, 448);
+    heap_header_t *header = (heap_header_t *)heap;
+    hl_release(heap, block);
+    int i = sizeof(heap_header_t);
+    int j = sizeof(block_info_t);
+    block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
+    while (i+block_size+j<header->heap_size){
+       if (curr_block!=block) { 
+           return curr_block;
+       }
+       i+=curr_block->block_size;
+       curr_block=ADD_BYTES(curr_block, curr_block->block_size);
+   }
+   
+
 }
 
 /* Find something that you think heaplame does wrong. Make a test
