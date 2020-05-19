@@ -32,9 +32,9 @@ const char* test_descriptions[] = {
     /* 2 */ "single alloc which should fail b/c heap is not big enough",
     /* 3 */ "multiple allocs, verifying no hard-coded block limit",
     /* your SPEC tests */
-    /* 4  */ "your description here",
-    /* 5  */ "your description here",
-    /* 6  */ "your description here",
+    /* 4  */ "single init, should fail if heap not aligned",
+    /* 5  */ "single init then single alloc, should pass if block is aligned",
+    /* 6  */ "alloc without init, should pass if alloc returns NULL",
     /* 7  */ "your description here",
     /* 8  */ "your description here",
     /* 9  */ "your description here",
@@ -194,10 +194,11 @@ int test03() {
  *
  * FUNCTIONS BEING TESTED:hl_init
  * SPECIFICATION BEING TESTED:
- * alignment
+ * alignment of heap
  *
  *
  * MANIFESTATION OF ERROR:
+ * Failure if heap is not 8-byte aligned and first block is not 8-byte aligned
  * 
  *
  */
@@ -216,10 +217,10 @@ int test04() {
  *
  * FUNCTIONS BEING TESTED:hl_alloc
  * SPECIFICATION BEING TESTED:
- * block_size
+ * block_size that isn't 8-byte aligned
  * 
  * MANIFESTATION OF ERROR:
- * Error if heap is not 8-byte aligned
+ * Error if block is not 8-byte aligned
  *
  */
 int test05() {
