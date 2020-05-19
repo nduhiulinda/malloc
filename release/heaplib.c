@@ -74,7 +74,7 @@ void print_debug_sizeof(void *block_addr) {
  * First checks if heap is 8-byte aligned. Aligns it if it's not.
  * Initializes heap metadata and first block metadata
  */
-int hl_init(void *heap, unsigned int heap_size) {
+  int hl_init(void *heap, unsigned int heap_size) {
     
     if (heap_size < MIN_HEAP_SIZE){
         return FAILURE;
@@ -82,13 +82,12 @@ int hl_init(void *heap, unsigned int heap_size) {
     //ensure heap is 8-byte aligned
     if ((uintptr_t)heap%ALIGNMENT!=0){
         int rem = (uintptr_t)heap%ALIGNMENT;
-        heap=ADD_BYTES(heap, (ALIGNMENT-rem));
+        heap=ADD_BYTES(heap, (ALIGNMENT+rem));
     }
     //initialize heap metadata
     heap_header_t *header = (heap_header_t *)heap;
     header->heap_size = heap_size;
     //initialize first block metadata
-    // header->blocks[0]->block_size = heap_size-(sizeof(heap_header_t));
     block_info_t *block_head = ADD_BYTES(heap, sizeof(heap_header_t));
     header->blocks[0] = *block_head;
     header->blocks[0].block_size = heap_size-(sizeof(heap_header_t));
@@ -97,8 +96,8 @@ int hl_init(void *heap, unsigned int heap_size) {
         header->blocks[0].block_size=header->blocks[0].block_size-rem;
     }
     header->blocks[0].allocated=0;
-    print_debug_heap_header(header);
-    print_debug_sizeof(header);
+    block_head->allocated=0;
+    block_head->block_size=header->blocks[0].block_size;
 
     return SUCCESS;
 }
@@ -114,55 +113,28 @@ int hl_init(void *heap, unsigned int heap_size) {
  */
 void *hl_alloc(void *heap, unsigned int block_size) {
     heap_header_t *header = (heap_header_t *)heap;
-    // void *next_free_byte = ADD_BYTES(header,sizeof(heap_header_t));
     int i = sizeof(heap_header_t);
     int j = sizeof(block_info_t);
-    // block_info_t *first_block = (block_info_t *)header->blocks[0];
-    // if !(first_block->allocated){
-    //     if (i+block_size+j<header->heap_size && j+block_size<first_block->block_size){
-    //         int old_size = first_block->block_size;
-    //         first_block->block_size = block_size + j;
-    //         if ((uintptr_t)first_block->block_size%ALIGNMENT!=0){
-    //             int rem = (uintptr_t)first_block->block_size%ALIGNMENT;
-    //             first_block->block_size=first_block->block_size-rem;
-    //         }
-    //         first_block->allocated = 1;
-    //         block_info_t *new_block = &first_block + first_block->block_size;
-    //         new_block->block_size= old_size - first_block->block_size;
-    //         new_block->allocated=0;
-    //         print_debug_alloc(first_block);
-    //         return first_block;
-    //     }
-    // } else{
-        block_info_t *curr_block = &header->blocks[0];
+        block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
         while (i+block_size+j<header->heap_size){
-
             if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 if ((uintptr_t)curr_block->block_size%ALIGNMENT!=0){
                     int rem = (uintptr_t)curr_block->block_size%ALIGNMENT;
-                    curr_block->block_size=curr_block->block_size-rem;
+                    curr_block->block_size=curr_block->block_size+(ALIGNMENT-rem);
                 }
                 curr_block->allocated = 1;
-                block_info_t *new_block = (uintptr_t)curr_block +  curr_block->block_size;
+                curr_block->allocated = 1;
+                block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
-                print_debug_alloc(curr_block);
-
-                print_debug_block_header(curr_block);
-                print_debug_heap_header(header);
-                print_debug_sizeof(header);
-                return curr_block;
-
+                return new_block;
             }
             i+=curr_block->block_size;
-            curr_block=curr_block + curr_block->block_size;
+            curr_block=ADD_BYTES(curr_block, curr_block->block_size);
         }
-    // }
-		
-
-	return FAILURE;
+    return FAILURE;
 }
 
 /* See the .h for the advertised behavior of this library function.
