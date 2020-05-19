@@ -83,28 +83,57 @@ int hl_init(void *heap, unsigned int heap_size) {
  * These comments describe the implementation, not the interface.
  *
  * YOUR COMMENTS GO HERE.
+ * 1. We assign in the 1st block
+ * 2. We assign other to block
+ * 3. We have no free space
+ * 
  */
 void *hl_alloc(void *heap, unsigned int block_size) {
-    // heap_header_t *header = (heap_header_t *)heap;
+    heap_header_t *header = (heap_header_t *)heap;
     // void *next_free_byte = ADD_BYTES(header,sizeof(heap_header_t));
-    // int i=sizeof(heap_header_t);
-    // 	while ( i<heap->heap_size) {
-	// 	if (header->blocks[i].allocated==0) {      
-	// 		header->blocks[i].allocated = 1;  
-	// 		header->blocks[i].block_size = block_size; 
-	// 		break;
-	// 	} else {
-	// 		next_free_byte = header->blocks[i].block + header->blocks[i].block_size;
-	// 	}
-    //     i+=header->blocks[i].block_size;
-	// }
-	// if (i == header->heap_size)
-		return FAILURE;
+    int i = sizeof(heap_header_t);
+    int j = sizeof(block_info_t);
+    // block_info_t *first_block = (block_info_t *)header->blocks[0];
+    // if !(first_block->allocated){
+    //     if (i+block_size+j<header->heap_size && j+block_size<first_block->block_size){
+    //         int old_size = first_block->block_size;
+    //         first_block->block_size = block_size + j;
+    //         if ((uintptr_t)first_block->block_size%ALIGNMENT!=0){
+    //             int rem = (uintptr_t)first_block->block_size%ALIGNMENT;
+    //             first_block->block_size=first_block->block_size-rem;
+    //         }
+    //         first_block->allocated = 1;
+    //         block_info_t *new_block = &first_block + first_block->block_size;
+    //         new_block->block_size= old_size - first_block->block_size;
+    //         new_block->allocated=0;
+    //         print_debug_alloc(first_block);
+    //         return first_block;
+    //     }
+    // } else{
+        block_info_t *curr_block = (block_info_t *)header->blocks[0];
+        while (i+block_size+j<header->heap_size){
 
-    //print_debug_alloc(next_free_byte);
-    //print_debug_heap_header(header);
+            if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
+                int old_size = curr_block->block_size;
+                curr_block->block_size = block_size + j;
+                if ((uintptr_t)curr_block->block_size%ALIGNMENT!=0){
+                    int rem = (uintptr_t)curr_block->block_size%ALIGNMENT;
+                    curr_block->block_size=curr_block->block_size-rem;
+                }
+                curr_block->allocated = 1;
+                block_info_t *new_block = curr_block + curr_block->block_size;
+                new_block->block_size= old_size - curr_block->block_size;
+                new_block->allocated=0;
+                print_debug_alloc(curr_block);
+                return curr_block;
+            }
+            i+=curr_block->block_size;
+            curr_block=&curr_block+curr_block->block_size;
+        }
+    // }
+		
 
-    // return next_free_byte;
+	return FAILURE;
 }
 
 /* See the .h for the advertised behavior of this library function.
