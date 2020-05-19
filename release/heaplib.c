@@ -7,6 +7,8 @@
 #include <assert.h>
 #include "spinlock.h"
 
+#define BLOCK_NOT_FOUND -1
+
 /* 
  * Global lock object.  You should use this global lock for any locking you need to do.
  */
@@ -67,6 +69,23 @@ void print_debug_sizeof(void *block_addr) {
 	printf("size of heap_header @: %ldu\n", sizeof(block_addr));
 #endif
 }
+
+
+int find_block(heap_header_t *header, void *block) {
+   int i = sizeof(heap_header_t);
+   int j = sizeof(block_info_t);
+   block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
+   // searching through blocks, looking for one given
+   while (i+block_size+j<header->heap_size){
+       if (curr_block==block) { // found it!
+           return curr_block;
+       }
+       i+=curr_block->block_size;
+       curr_block=ADD_BYTES(curr_block, curr_block->block_size);
+   }
+   return BLOCK_NOT_FOUND;
+}
+
 
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.
@@ -143,6 +162,12 @@ void *hl_alloc(void *heap, unsigned int block_size) {
  * YOUR COMMENTS GO HERE.
  */
 void hl_release(void *heap, void *block) {
+    heap_header_t *header = (heap_header_t *)heap;
+    void finder = find_block(header, block);
+    if (finder!=BLOCK_NOT_FOUND) { // found it!
+         header->finder.allocated=0;
+       }
+
 
 }
 
