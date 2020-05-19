@@ -169,11 +169,11 @@ void hl_release(void *heap, void *block) {
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
     if (finder!=NULL) { // found it!
         finder->allocated=0;
+        block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
+        if (next_block->allocated==0){
+            finder->block_size+=next_block->block_size;
+            next_block=NULL;
     }
-    block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
-    if (next_block->allocated==0){
-        finder->block_size+=next_block->block_size;
-        next_block=NULL;
     }
 }
 
