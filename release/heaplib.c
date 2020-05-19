@@ -71,26 +71,26 @@ int hl_init(void *heap, unsigned int heap_size) {
  * YOUR COMMENTS GO HERE.
  */
 void *hl_alloc(void *heap, unsigned int block_size) {
-    heap_header_t *header = (heap_header_t *)heap;
-    void *next_free_byte = ADD_BYTES(header,sizeof(heap_header_t));
-    int i=sizeof(heap_header_t);
-    	while ( i<heap->heap_size) {
-		if (header->blocks[i].allocated==0) {      
-			header->blocks[i].allocated = 1;  
-			header->blocks[i].block_size = block_size; 
-			break;
-		} else {
-			next_free_byte = header->blocks[i].block + header->blocks[i].block_size;
-		}
-        i+=header->blocks[i].block_size;
-	}
-	if (i == header->heap_size)
+    // heap_header_t *header = (heap_header_t *)heap;
+    // void *next_free_byte = ADD_BYTES(header,sizeof(heap_header_t));
+    // int i=sizeof(heap_header_t);
+    // 	while ( i<heap->heap_size) {
+	// 	if (header->blocks[i].allocated==0) {      
+	// 		header->blocks[i].allocated = 1;  
+	// 		header->blocks[i].block_size = block_size; 
+	// 		break;
+	// 	} else {
+	// 		next_free_byte = header->blocks[i].block + header->blocks[i].block_size;
+	// 	}
+    //     i+=header->blocks[i].block_size;
+	// }
+	// if (i == header->heap_size)
 		return FAILURE;
 
     //print_debug_alloc(next_free_byte);
     //print_debug_heap_header(header);
 
-    return next_free_byte;
+    // return next_free_byte;
 }
 
 /* See the .h for the advertised behavior of this library function.
