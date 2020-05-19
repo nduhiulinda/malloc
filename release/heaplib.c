@@ -71,7 +71,7 @@ void print_debug_sizeof(void *block_addr) {
 }
 
 
-void* find_block(heap_header_t *header, void *block, int block_size) {
+block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
    int i = sizeof(heap_header_t);
    int j = sizeof(block_info_t);
    block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
@@ -164,10 +164,10 @@ void *hl_alloc(void *heap, unsigned int block_size) {
 void hl_release(void *heap, void *block) {
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
-    void* finder = find_block(header,main_block,main_block->block_size);
+    block_info_t* finder = find_block(header,main_block,main_block->block_size);
     if (finder!=NULL) { // found it!
         finder->allocated=0;
-       }
+    }
 
 
 }
