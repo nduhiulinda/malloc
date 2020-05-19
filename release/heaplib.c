@@ -64,7 +64,7 @@ void print_debug_alloc(void *block_addr) {
 
 void print_debug_sizeof(void *block_addr) {
 #ifdef PRINT_DEBUG
-	printf("sizeof heap_header @: %d\n", sizeof(block_addr));
+	printf("size of heap_header @: %ldu\n", sizeof(block_addr));
 #endif
 }
 
