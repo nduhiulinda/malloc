@@ -143,6 +143,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 new_block->allocated=0;
                 print_debug_alloc(curr_block);
                 print_debug_block_header(curr_block);
+                print_debug_heap_header(header);
                 return curr_block;
             }
             i+=curr_block->block_size;
