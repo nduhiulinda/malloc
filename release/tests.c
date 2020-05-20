@@ -283,9 +283,10 @@ int test07() {
     char heap[HEAP_SIZE];
     hl_init(heap, HEAP_SIZE);     
     int *block1 = hl_alloc(heap, 8);
-    hl_release(heap, block1);
+    int *block3 = hl_alloc(heap, 10);
+    hl_release(heap, block3);
     int *block2 = hl_alloc(heap, 8);
-    if (block1==block2){
+    if (block3==block2){
         return SUCCESS;
     }
     return FAILURE;
@@ -295,7 +296,7 @@ int test07() {
  * for that thing!
  *
  * FUNCTIONS BEING TESTED: hl_release & hl_alloc
- * SPECIFICATION BEING TESTED: if block is zero, release acts as NOP
+ * SPECIFICATION BEING TESTED: if block is NULL, release acts as NOP
  *
  * MANIFESTATION OF ERROR:
  */
@@ -313,7 +314,7 @@ int test08() {
     hl_alloc(heap2, 64);  
     hl_alloc(heap2, 512); 
     hl_alloc(heap2, 800);
-    if (memcmp(heap,heap2,sizeof(char))==0){
+    if (memcmp(heap,heap2,sizeof(heap))==0){
         return SUCCESS;
     }
     return FAILURE;
