@@ -179,8 +179,8 @@ void hl_release(void *heap, void *block) {
         next_block=find_block(header, next_block, next_block->block_size);
         if (next_block!=NULL && next_block->allocated==0){
             int new_size=finder->block_size+next_block->block_size;
-            next_block->block_size=NULL;
-            next_block->allocated=NULL;
+            next_block->block_size=0;
+            next_block->allocated=0;
             next_block=NULL;
             finder->block_size=new_size;
     }
