@@ -32,10 +32,10 @@ const char* test_descriptions[] = {
     /* 2 */ "single alloc which should fail b/c heap is not big enough",
     /* 3 */ "multiple allocs, verifying no hard-coded block limit",
     /* your SPEC tests */
-    /* 4  */ "single init, should fail if heap not aligned",
-    /* 5  */ "single init then single alloc, should pass if block is aligned",
-    /* 6  */ "alloc without init, should pass if alloc returns NULL",
-    /* 7  */ "your description here",
+    /* 4  */ "single init then single alloc, should pass if block is aligned",
+    /* 5  */ "single init then single alloc of size 0, should fail if block is not alloced",
+    /* 6  */ "single init then single alloc, should fail if alloc doesn't return NULL when full",
+    /* 7  */ "alloc the rlease then alloc on same block, should fail if block is not released/can't be reallocated",
     /* 8  */ "your description here",
     /* 9  */ "your description here",
     /* 10 */ "your description here",
@@ -192,13 +192,13 @@ int test03() {
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:hl_init
+ * FUNCTIONS BEING TESTED:hl_init and hl_alloc
  * SPECIFICATION BEING TESTED:
- * alignment of heap
+ * alignment of block even if heap isn't aligned
  *
  *
  * MANIFESTATION OF ERROR:
- * Failure if heap is not 8-byte aligned and first block is not 8-byte aligned
+ * Failure if block is not 8-byte aligned 
  * 
  *
  */
@@ -224,21 +224,21 @@ int test04() {
  * for that thing!
  *
  * FUNCTIONS BEING TESTED:hl_alloc
- * SPECIFICATION BEING TESTED:
- * block_size that isn't 8-byte aligned
+ * SPECIFICATION BEING TESTED: alloc block of size zero
  * 
  * MANIFESTATION OF ERROR:
- * Error if block is not 8-byte aligned
+ * Error if block of size zero is not alloced
  *
  */
 int test05() {
  
-    char heap[HEAP_SIZE+4];
+    char heap[HEAP_SIZE];
  
-    hl_init((void*)heap+4, HEAP_SIZE);
+    hl_init(heap, HEAP_SIZE);
  
-    int *array = hl_alloc(heap, 8);
-    if ((uintptr_t) array%8==0){
+    int *array = hl_alloc(heap, 0);
+
+    if ((array !=0) && (uintptr_t) array%ALIGNMENT==0){
         return SUCCESS;
     }
     return FAILURE;
@@ -248,17 +248,21 @@ int test05() {
  * for that thing!
  *
  * FUNCTIONS BEING TESTED: hl_alloc
- * SPECIFICATION BEING TESTED: check if heap was initialized
+ * SPECIFICATION BEING TESTED: return NULL if can't alloc
  *
  *
  * MANIFESTATION OF ERROR: 
- * If heap was not initialized, return NULL(0)
+ * Fail if alloc doesn't return NULL when full
  *
  */
 int test06() {
     char heap[HEAP_SIZE];
-  
-    if (hl_alloc(heap, 8)==0){
+    hl_init(heap, HEAP_SIZE); 
+    hl_alloc(heap, 8);
+    hl_alloc(heap, 64);  
+    hl_alloc(heap, 512); 
+    int * block = hl_alloc(heap, 512);
+    if (block==0){
         return SUCCESS;
     }
     return FAILURE;
@@ -268,11 +272,11 @@ int test06() {
  * for that thing!
  *
  * FUNCTIONS BEING TESTED: hl_release & hl_alloc
- * SPECIFICATION BEING TESTED: frees allocated block
+ * SPECIFICATION BEING TESTED: frees allocated block and reallocates block
  *
  *
  * MANIFESTATION OF ERROR:
- * Fails if block is not released
+ * Fails if block is not released/ can't reallocated
  *
  */
 int test07() {
@@ -280,7 +284,7 @@ int test07() {
     hl_init(heap, HEAP_SIZE);     
     int *block1 = hl_alloc(heap, 8);
     hl_release(heap, block1);
-    int *block2 = hl_alloc(heap, 8);
+    int *block2 = hl_alloc(heap, 36);
     if (block1==block2){
         return SUCCESS;
     }
@@ -391,6 +395,8 @@ return FAILURE;
  *
  */
 int test11() {
+    
+    
 
     return FAILURE;
 }

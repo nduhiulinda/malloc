@@ -144,11 +144,10 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                     curr_block->block_size=curr_block->block_size+(ALIGNMENT-rem);
                 }
                 curr_block->allocated = 1;
-                curr_block->allocated = 1;
                 block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
-                return new_block;
+                return curr_block;
             }
             i+=curr_block->block_size;
             curr_block=ADD_BYTES(curr_block, curr_block->block_size);
