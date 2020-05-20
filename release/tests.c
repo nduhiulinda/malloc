@@ -36,14 +36,14 @@ const char* test_descriptions[] = {
     /* 5  */ "single init then single alloc of size 0, should fail if block is not NULL",
     /* 6  */ "single init then single alloc, should fail if alloc doesn't return NULL when full",
     /* 7  */ "alloc the rlease then alloc on same block, should fail if block is not released/can't be reallocated",
-    /* 8  */ "your description here",
-    /* 9  */ "your description here",
-    /* 10 */ "your description here",
+    /* 8  */ "if block is zero, acts as NOP",
+    /* 9  */ "after resizing a block, the contents of the block are preserved",
+    /* 10 */ "if block is NULL, resize acts as allocate",
     /* 11 */ "single init then single alloc, should pass if block is aligned and heap is not",
-    /* 12 */ "your description here",
+    /* 12 */ "if new_size is 0, resize returns NULL",
     /* 13 */ "your description here",
     /* 14 */ "your description here",
-    /* 15 */ "example threading test",
+    /* 15 */ "multiple threads simultaneously using the library should not interfere with each other or cause a deadlock",
     /* STRESS tests */
     /* 16 */ "alloc & free, stay within heap limits",
     /* 17 */ "your description here",
@@ -300,30 +300,23 @@ int test07() {
  * MANIFESTATION OF ERROR:
  */
 int test08() {
-//     char heap[HEAP_SIZE];
-//     char heap2[HEAP_SIZE];
-//     hl_init(heap, HEAP_SIZE); 
-//     hl_alloc(heap, 8);
-//     hl_alloc(heap, 64);  
-//     hl_alloc(heap, 512); 
-//     int *block = hl_alloc(heap, 800);
-//     hl_init(heap2, HEAP_SIZE); 
-//     hl_alloc(heap2, 8);
-//     hl_alloc(heap2, 64);  
-//     hl_alloc(heap2, 512); 
-//     int *block2 = hl_alloc(heap2, 800);
-//     heap_header_t *header = (heap_header_t *)heap;
-//     hl_release(heap, block);
-//     int i = sizeof(heap_header_t);
-//     int j = sizeof(block_info_t);
-//     block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
-//     while (i+block_size+j<header->heap_size){
-//        if (curr_block!=block) { 
-//            return curr_block;
-//        }
-//        i+=curr_block->block_size;
-//        curr_block=ADD_BYTES(curr_block, curr_block->block_size);
-//    }
+    char heap[HEAP_SIZE];
+    char heap2[HEAP_SIZE];
+    hl_init(heap, HEAP_SIZE); 
+    hl_alloc(heap, 8);
+    hl_alloc(heap, 64);  
+    hl_alloc(heap, 512); 
+    int *block = hl_alloc(heap, 800);
+    hl_init(heap2, HEAP_SIZE); 
+    hl_alloc(heap2, 8);
+    hl_alloc(heap2, 64);  
+    hl_alloc(heap2, 512); 
+    int *block2 = hl_alloc(heap2, 800);
+    heap_header_t *header = (heap_header_t *)heap;
+    hl_release(heap, block);
+    if (memcmp(heap,heap2,sizeof(heap))==0){
+        return SUCCESS;
+    }
     return FAILURE;
 
 }
@@ -338,14 +331,20 @@ int test08() {
  *
  */
 int test09() {
-    // char heap[HEAP_SIZE];
-    // hl_init(heap, HEAP_SIZE);     
-    // int *block = hl_alloc(heap, 8);
-    // heap_header_t *header = (heap_header_t *)heap;
-    // void *hl_resize(heap, block, 16);
-    // int block_no = find_block(heap_header_t *header, void *block);
-    // header->blocks[block_no] 
-
+    char heap[HEAP_SIZE];
+    char heap2[HEAP_SIZE];
+    hl_init(heap, HEAP_SIZE);     
+    hl_init(heap2, HEAP_SIZE);
+    int *block = hl_alloc(heap, 8);
+    block_info_t *new_block = ADD_BYTES(block, sizeof(block_info_t));
+    memset(new_block,'a',4);
+    int *block2 = hl_alloc(heap2, 8);
+    block_info_t *new_block2 = ADD_BYTES(block2, sizeof(block_info_t));
+    memset(new_block2,'a',4);
+    hl_resize(heap, block, 16);
+    if (memcmp(block,block2,sizeof(notsure))==0){
+        return SUCCESS;
+    }
     return FAILURE;
 }
 
@@ -353,7 +352,7 @@ int test09() {
  * for that thing!
  *
  * FUNCTIONS BEING TESTED: resize
- * SPECIFICATION BEING TESTED: if block is NULL, allocate block
+ * SPECIFICATION BEING TESTED: if block is NULL, resize acts as allocate
  *
  *
  * MANIFESTATION OF ERROR:
@@ -367,7 +366,7 @@ int test10() {
     // int *block = hl_alloc(heap1, 8); 
     // int *block2 = NULL; 
     // int *resize_block=hl_resize(heap2, block2, 8); 
-    // if (block==resize_block){
+    // if (memcmp(block,block,sizeof(heap))==0){
     //     return SUCCESS;
     // }
 
@@ -416,7 +415,7 @@ int test11() {
  * for that thing!
  *
  * FUNCTIONS BEING TESTED:hl_init, hl_resize.
- * SPECIFICATION BEING TESTED: if new_size is 0 return NULL.
+ * SPECIFICATION BEING TESTED: if new_size is 0, resize returns NULL.
  *
  *
  * MANIFESTATION OF ERROR: Fail if new_size = 0 does not return NULL.

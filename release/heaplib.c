@@ -209,7 +209,8 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
         if (new_block!=NULL){
             new_block->allocated=1;
             new_block->block_size=new_size;
-            memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);    
+            memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
+            finder=NULL;  
         }
     }
     return FAILURE;

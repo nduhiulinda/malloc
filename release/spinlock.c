@@ -5,11 +5,23 @@
 void mutex_unlock_riscv(volatile int* lock){
 
   //TODO: your implementation here!
+  asm ("test_and_set: LI t0, 1\n\t"
+                      "LR.W t1, (%[oplock])\n\t"
+                      "BNEZ t1, test_and_set\n\t" // lock free?
+                      "SC.W t0, t0, (%[oplock])\n\t"
+                      "BNEZ t0, test_and_set\n\t" // successfully claimed?
+      :"=r"(result)
+      :[oplock]"r"(lock),
+  );
   return;
 }
 
 void mutex_lock_riscv(volatile int* lock){
   //TODO: your implementation here!
+  asm ("SW x0, 0(%[oplock])\n\t"
+       :"=r"(result)
+       :[oplock]"r"(lock),
+  );
   return;
 }
 #endif
