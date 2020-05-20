@@ -214,7 +214,7 @@ int test04() {
 
     hl_init(heap_ptr, HEAP_SIZE);
     uintptr_t block = (uintptr_t) hl_alloc(heap_ptr, 13);
-    if (block%ALIGNMENT==0)){
+    if (block%ALIGNMENT==0){
         return SUCCESS;
     }
     return FAILURE;
@@ -300,31 +300,31 @@ int test07() {
  * MANIFESTATION OF ERROR:
  */
 int test08() {
-    char heap[HEAP_SIZE];
-    char heap2[HEAP_SIZE];
-    hl_init(heap, HEAP_SIZE); 
-    hl_alloc(heap, 8);
-    hl_alloc(heap, 64);  
-    hl_alloc(heap, 512); 
-    int *block = hl_alloc(heap, 800);
-    hl_init(heap2, HEAP_SIZE); 
-    hl_alloc(heap2, 8);
-    hl_alloc(heap2, 64);  
-    hl_alloc(heap2, 512); 
-    int *block2 = hl_alloc(heap2, 800);
-    heap_header_t *header = (heap_header_t *)heap;
-    hl_release(heap, block);
-    int i = sizeof(heap_header_t);
-    int j = sizeof(block_info_t);
-    block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
-    while (i+block_size+j<header->heap_size){
-       if (curr_block!=block) { 
-           return curr_block;
-       }
-       i+=curr_block->block_size;
-       curr_block=ADD_BYTES(curr_block, curr_block->block_size);
-   }
-   
+//     char heap[HEAP_SIZE];
+//     char heap2[HEAP_SIZE];
+//     hl_init(heap, HEAP_SIZE); 
+//     hl_alloc(heap, 8);
+//     hl_alloc(heap, 64);  
+//     hl_alloc(heap, 512); 
+//     int *block = hl_alloc(heap, 800);
+//     hl_init(heap2, HEAP_SIZE); 
+//     hl_alloc(heap2, 8);
+//     hl_alloc(heap2, 64);  
+//     hl_alloc(heap2, 512); 
+//     int *block2 = hl_alloc(heap2, 800);
+//     heap_header_t *header = (heap_header_t *)heap;
+//     hl_release(heap, block);
+//     int i = sizeof(heap_header_t);
+//     int j = sizeof(block_info_t);
+//     block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
+//     while (i+block_size+j<header->heap_size){
+//        if (curr_block!=block) { 
+//            return curr_block;
+//        }
+//        i+=curr_block->block_size;
+//        curr_block=ADD_BYTES(curr_block, curr_block->block_size);
+//    }
+   return FAILURE;
 
 }
 
