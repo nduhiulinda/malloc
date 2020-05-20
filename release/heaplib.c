@@ -166,8 +166,8 @@ void hl_release(void *heap, void *block) {
     }
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
-    int i = sizeof(heap_header_t);
-    int j = sizeof(block_info_t);
+    // int i = sizeof(heap_header_t);
+    // int j = sizeof(block_info_t);
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
     if (finder!=NULL) { // found it!
         finder->allocated=0;
