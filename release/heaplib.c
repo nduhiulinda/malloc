@@ -180,7 +180,7 @@ void hl_release(void *heap, void *block) {
         if (next_block!=NULL && next_block->allocated==0){
             int new_size=finder->block_size+next_block->block_size;
             next_block=ADD_BYTES(next_block , -(finder->block_size));
-            next_block->block_size=new_size;
+            finder->block_size=new_size;
     }
     }
 }
