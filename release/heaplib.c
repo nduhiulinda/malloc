@@ -76,7 +76,7 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
     block_info_t *curr_block =header->first_block;
     int i = (uintptr_t)curr_block;
     // searching through blocks, looking for one given
-    while (i<(int)ADD_BYTES((uintptr_t)header,header->heap_size)){
+    while (i<(uintptr_t)(ADD_BYTES((uintptr_t)header,header->heap_size))){
        if (curr_block==block) { // found it!
            return curr_block;
        }
