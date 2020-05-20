@@ -338,13 +338,13 @@ int test08() {
  *
  */
 int test09() {
-//     char heap[HEAP_SIZE];
-//     hl_init(heap, HEAP_SIZE);     
-//     int *block = hl_alloc(heap, 8);
-//     heap_header_t *header = (heap_header_t *)heap;
-//     void *hl_resize(heap, block, 16);
-//     int block_no = find_block(heap_header_t *header, void *block);
-//     header->blocks[block_no] 
+    // char heap[HEAP_SIZE];
+    // hl_init(heap, HEAP_SIZE);     
+    // int *block = hl_alloc(heap, 8);
+    // heap_header_t *header = (heap_header_t *)heap;
+    // void *hl_resize(heap, block, 16);
+    // int block_no = find_block(heap_header_t *header, void *block);
+    // header->blocks[block_no] 
 
     return FAILURE;
 }
@@ -360,28 +360,27 @@ int test09() {
  *
  */
 int test10() {
-//     char heap1[HEAP_SIZE];
-//     char heap2[HEAP_SIZE];
-//     hl_init(heap1, HEAP_SIZE);   
-//     hl_init(heap2, HEAP_SIZE);    
-//     int *block = hl_alloc(heap1, 8); 
-//     int *block2 = NULL; 
-//     void *hl_resize(heap2, block2, 8); 
-//     heap_header_t *header1 = (heap_header_t *)heap1;
-//     heap_header_t *header2 = (heap_header_t *)heap2; 
-//     int count=0;
+    // char heap1[HEAP_SIZE];
+    // char heap2[HEAP_SIZE];
+    // hl_init(heap1, HEAP_SIZE);   
+    // hl_init(heap2, HEAP_SIZE);    
+    // int *block = hl_alloc(heap1, 8); 
+    // int *block2 = NULL; 
+    // int *resize_block=hl_resize(heap2, block2, 8); 
+    // if (block==resize_block){
+    //     return SUCCESS;
+    // }
 
-//     for (int i = 0; i < 8; i++){
-//         if ((header1->blocks[i].block==header2->blocks[i].block) && header1->in_use_f[i]==header2->in_use_f[i]){
-//             count++;
-//         }
-//         else{
-//             break;
-//         }   
-//     }
-     
-//     return (count==8);
-return FAILURE;
+    // return FAILURE;
+    char heap2[HEAP_SIZE];  
+    hl_init(heap2, HEAP_SIZE);    
+    int *block2 = NULL; 
+    int *resize_block=hl_resize(heap2, block2, 8); 
+    if (resize_block!=NULL){
+        return SUCCESS;
+    }
+
+    return FAILURE;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
@@ -416,14 +415,21 @@ int test11() {
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:
- * SPECIFICATION BEING TESTED:
+ * FUNCTIONS BEING TESTED:hl_init, hl_resize.
+ * SPECIFICATION BEING TESTED: if new_size is 0 return NULL.
  *
  *
- * MANIFESTATION OF ERROR:
+ * MANIFESTATION OF ERROR: Fail if new_size = 0 does not return NULL.
  *
  */
 int test12() {
+    char heap1[HEAP_SIZE];
+    hl_init(heap1, HEAP_SIZE);  
+    int * block = hl_alloc(heap, 56);    
+    int *resize_block=hl_resize(heap1, block, 0); 
+    if (resize_block==NULL){
+        return SUCCESS;
+    }
 
     return FAILURE;
 }

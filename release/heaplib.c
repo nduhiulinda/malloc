@@ -192,7 +192,26 @@ void hl_release(void *heap, void *block) {
  * YOUR COMMENTS GO HERE.
  */
 void *hl_resize(void *heap, void *block, unsigned int new_size) {
-
+     if (new_size==0){
+        return FAILURE;
+    }
+    if (block==0){
+        return hl_alloc(heap,new_size);
+    }
+    heap_header_t *header = (heap_header_t *)heap;
+    block_info_t *main_block=(block_info_t *)block;
+    block_info_t* finder = find_block(header,main_block,main_block->block_size);
+    if (finder->block_size>=new_size){
+        finder->block_size = new_size;
+        return finder;
+    }else{
+        block_info_t* new_block=hl_alloc(heap, new_size);
+        if (new_block!=NULL){
+            new_block->allocated=1;
+            new_block->block_size=new_size;
+            memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);    
+        }
+    }
     return FAILURE;
 }
 
