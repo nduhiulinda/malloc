@@ -33,7 +33,7 @@ const char* test_descriptions[] = {
     /* 3 */ "multiple allocs, verifying no hard-coded block limit",
     /* your SPEC tests */
     /* 4  */ "single init then single alloc, should pass if block is aligned",
-    /* 5  */ "single init then single alloc of size 0, should fail if block is not alloced",
+    /* 5  */ "single init then single alloc of size 0, should fail if block is not NULL",
     /* 6  */ "single init then single alloc, should fail if alloc doesn't return NULL when full",
     /* 7  */ "alloc the rlease then alloc on same block, should fail if block is not released/can't be reallocated",
     /* 8  */ "your description here",
@@ -227,7 +227,7 @@ int test04() {
  * SPECIFICATION BEING TESTED: alloc block of size zero
  * 
  * MANIFESTATION OF ERROR:
- * Error if block of size zero is not alloced
+ * Failure if block of size zero is not NULL
  *
  */
 int test05() {
@@ -238,7 +238,7 @@ int test05() {
  
     int *array = hl_alloc(heap, 0);
 
-    if ((array !=0) && (uintptr_t) array%ALIGNMENT==0){
+    if (array ==0){
         return SUCCESS;
     }
     return FAILURE;

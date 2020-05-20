@@ -131,6 +131,9 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
  * 
  */
 void *hl_alloc(void *heap, unsigned int block_size) {
+    if (block_size ==0){
+        return NULL;
+    }
     heap_header_t *header = (heap_header_t *)heap;
     int i = sizeof(heap_header_t);
     int j = sizeof(block_info_t);
