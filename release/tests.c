@@ -39,7 +39,7 @@ const char* test_descriptions[] = {
     /* 8  */ "your description here",
     /* 9  */ "your description here",
     /* 10 */ "your description here",
-    /* 11 */ "your description here",
+    /* 11 */ "single init then single alloc, should pass if block is aligned and heap is not",
     /* 12 */ "your description here",
     /* 13 */ "your description here",
     /* 14 */ "your description here",
@@ -324,7 +324,7 @@ int test08() {
 //        i+=curr_block->block_size;
 //        curr_block=ADD_BYTES(curr_block, curr_block->block_size);
 //    }
-   return FAILURE;
+    return FAILURE;
 
 }
 
@@ -387,17 +387,29 @@ return FAILURE;
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
  *
- * FUNCTIONS BEING TESTED:
+ * FUNCTIONS BEING TESTED:hl_init and hl_alloc
  * SPECIFICATION BEING TESTED:
+ * alignment of block  if heap is aligned
  *
  *
  * MANIFESTATION OF ERROR:
+ * Failure if block is  not 8-byte aligned 
+ * 
  *
  */
 int test11() {
-    
-    
+    char heap[HEAP_SIZE];
+    int align=0;
+    int *heap_ptr = (int*)heap;
+    if ((uintptr_t)heap_ptr % 8 == 0){
+        align=1;
+        }
 
+    hl_init(heap_ptr, HEAP_SIZE);
+    uintptr_t block = (uintptr_t) hl_alloc(heap_ptr, 13);
+    if (block%ALIGNMENT==0 &&  align){
+        return SUCCESS;
+    }
     return FAILURE;
 }
 

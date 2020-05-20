@@ -130,6 +130,7 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
  * 3. We have no free space
  * 
  */
+// The size of the header (~8 bytes) is not the size of the entire heap
 void *hl_alloc(void *heap, unsigned int block_size) {
     if (block_size ==0){
         return NULL;
@@ -172,12 +173,14 @@ void hl_release(void *heap, void *block) {
     // int i = sizeof(heap_header_t);
     // int j = sizeof(block_info_t);
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
-    if (finder!=NULL) { // found it!
+    if (finder!=NULL) {
         finder->allocated=0;
         block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
-        if (next_block->allocated==0){
-            finder->block_size+=next_block->block_size;
-            next_block=NULL;
+        next_block=find_block(header, next_block, next_block->block_size);
+        if (next_block!=NULL && next_block->allocated==0){
+            int new_size=finder->block_size+next_block->block_size;
+            next_block=ADD_BYTES(next_block , -(finder->block_size));
+            next_block->block_size=new_size;
     }
     }
 }
