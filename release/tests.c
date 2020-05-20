@@ -239,9 +239,10 @@ int test05() {
     int *array = hl_alloc(heap, 0);
 
     if (array ==NULL){
-        return SUCCESS;
+        return FAILURE;
     }
-    return FAILURE;
+    return SUCCESS;
+
 }
 
 /* Find something that you think heaplame does wrong. Make a test
@@ -415,10 +416,9 @@ int test12() {
     int * block = hl_alloc(heap1, 56);    
     int *resize_block=hl_resize(heap1, block, 0); 
     if (resize_block==NULL){
-        return SUCCESS;
+        return FAILURE;
     }
-
-    return FAILURE;
+    return SUCCESS;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
