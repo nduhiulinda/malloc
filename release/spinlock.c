@@ -5,7 +5,7 @@
 void mutex_unlock_riscv(volatile int* lock){
 
   //TODO: your implementation here!
-  void result;
+  int result;
   asm ("test_and_set: LI t0, 1\n\t"
                       "LR.W t1, (%[oplock])\n\t"
                       "BNEZ t1, test_and_set\n\t" // lock free?
@@ -19,7 +19,7 @@ void mutex_unlock_riscv(volatile int* lock){
 
 void mutex_lock_riscv(volatile int* lock){
   //TODO: your implementation here!
-  void result;
+  int result;
   asm ("SW x0, 0(%[oplock])\n\t"
        :"=r"(result)
        :[oplock]"r"(lock)

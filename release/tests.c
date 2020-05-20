@@ -36,7 +36,7 @@ const char* test_descriptions[] = {
     /* 5  */ "single init then single alloc of size 0, should fail if block is not NULL",
     /* 6  */ "single init then single alloc, should fail if alloc doesn't return NULL when full",
     /* 7  */ "alloc the rlease then alloc on same block, should fail if block is not released/can't be reallocated",
-    /* 8  */ "if block is zero, acts as NOP",
+    /* 8  */ "if block is zero, release acts as NOP",
     /* 9  */ "after resizing a block, the contents of the block are preserved",
     /* 10 */ "if block is NULL, resize acts as allocate",
     /* 11 */ "single init then single alloc, should pass if block is aligned and heap is not",
@@ -313,7 +313,7 @@ int test08() {
     hl_alloc(heap2, 64);  
     hl_alloc(heap2, 512); 
     hl_alloc(heap2, 800);
-    if (memcmp(heap,heap2,sizeof(heap))==0){
+    if (memcmp(heap,heap2,sizeof(char))==0){
         return SUCCESS;
     }
     return FAILURE;
