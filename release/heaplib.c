@@ -76,7 +76,7 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
    int j = sizeof(block_info_t);
    block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
    // searching through blocks, looking for one given
-   while (i+block_size+j<header->heap_size){
+   while (i<header->heap_size){
        if (curr_block==block) { // found it!
            return curr_block;
        }
@@ -85,7 +85,6 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
    }
    return NULL;
 }
-
 
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.

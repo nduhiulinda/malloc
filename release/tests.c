@@ -284,7 +284,7 @@ int test07() {
     hl_init(heap, HEAP_SIZE);     
     int *block1 = hl_alloc(heap, 8);
     hl_release(heap, block1);
-    int *block2 = hl_alloc(heap, 36);
+    int *block2 = hl_alloc(heap, 8);
     if (block1==block2){
         return SUCCESS;
     }
