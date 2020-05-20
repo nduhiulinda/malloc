@@ -425,7 +425,7 @@ int test11() {
 int test12() {
     char heap1[HEAP_SIZE];
     hl_init(heap1, HEAP_SIZE);  
-    int * block = hl_alloc(heap, 56);    
+    int * block = hl_alloc(heap1, 56);    
     int *resize_block=hl_resize(heap1, block, 0); 
     if (resize_block==NULL){
         return SUCCESS;
