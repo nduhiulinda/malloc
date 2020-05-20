@@ -27,11 +27,12 @@ typedef struct _block_info_t {
 } block_info_t;
 
 typedef struct _heap_header_t {
-	unsigned int heap_size;
+    unsigned int heap_size;
     // unsigned int free_heap_size;
-    block_info_t blocks[1];
+    block_info_t* first_block;
     // bool in_use_f[0];
 } heap_header_t ;
+
 
 /**Prints 
  * 
@@ -72,18 +73,21 @@ void print_debug_sizeof(void *block_addr) {
 
 
 block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
-   int i = sizeof(heap_header_t);
-   //int j = sizeof(block_info_t);
-   block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
-   // searching through blocks, looking for one given
-   while (i<header->heap_size){
+    block_info_t *curr_block =header->first_block;
+    int i = (uintptr_t)curr_block;
+    // searching through blocks, looking for one given
+    while (i<(int)ADD_BYTES((uintptr_t)header,header->heap_size)){
        if (curr_block==block) { // found it!
            return curr_block;
        }
        i+=curr_block->block_size;
        curr_block=ADD_BYTES(curr_block, curr_block->block_size);
-   }
-   return NULL;
+       if ((uintptr_t)curr_block%ALIGNMENT!=0){
+            int rem = (uintptr_t)curr_block%ALIGNMENT;
+            curr_block=ADD_BYTES(curr_block,(ALIGNMENT-rem));
+        }
+    }
+    return NULL;
 }
 
 /* See the .h for the advertised behavior of this library function.
@@ -100,22 +104,22 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
     //ensure heap is 8-byte aligned
     if ((uintptr_t)heap%ALIGNMENT!=0){
         int rem = (uintptr_t)heap%ALIGNMENT;
-        heap=ADD_BYTES(heap, (ALIGNMENT+rem));
+        heap=ADD_BYTES(heap, (ALIGNMENT-rem));
     }
     //initialize heap metadata
     heap_header_t *header = (heap_header_t *)heap;
     header->heap_size = heap_size;
     //initialize first block metadata
     block_info_t *block_head = ADD_BYTES(heap, sizeof(heap_header_t));
-    header->blocks[0] = *block_head;
-    header->blocks[0].block_size = heap_size-(sizeof(heap_header_t));
-    if ((uintptr_t)header->blocks[0].block_size%ALIGNMENT!=0){
-        int rem = (uintptr_t)header->blocks[0].block_size%ALIGNMENT;
-        header->blocks[0].block_size=header->blocks[0].block_size-rem;
+
+    if ((uintptr_t)block_head%ALIGNMENT!=0){
+        int rem = (uintptr_t)block_head%ALIGNMENT;
+        block_head=ADD_BYTES(block_head,(ALIGNMENT-rem));
     }
-    header->blocks[0].allocated=0;
+    
+    header->first_block = block_head;
     block_head->allocated=0;
-    block_head->block_size=header->blocks[0].block_size;
+    block_head->block_size=heap_size-(sizeof(heap_header_t));
 
     return SUCCESS;
 }
@@ -137,23 +141,27 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     heap_header_t *header = (heap_header_t *)heap;
     int i = sizeof(heap_header_t);
     int j = sizeof(block_info_t);
-        block_info_t *curr_block =ADD_BYTES(header,sizeof(heap_header_t));
+        block_info_t *curr_block =header->first_block;
         while (i+block_size+j<header->heap_size){
             if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
-                if ((uintptr_t)curr_block->block_size%ALIGNMENT!=0){
-                    int rem = (uintptr_t)curr_block->block_size%ALIGNMENT;
-                    curr_block->block_size=curr_block->block_size+(ALIGNMENT-rem);
-                }
                 curr_block->allocated = 1;
                 block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
+                if ((uintptr_t)new_block%ALIGNMENT!=0){
+                  int rem = (uintptr_t)new_block%ALIGNMENT;
+                  new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
+                }
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
                 return curr_block;
             }
             i+=curr_block->block_size;
             curr_block=ADD_BYTES(curr_block, curr_block->block_size);
+            if ((uintptr_t)curr_block%ALIGNMENT!=0){
+                int rem = (uintptr_t)curr_block%ALIGNMENT;
+                curr_block=ADD_BYTES(curr_block,(ALIGNMENT-rem));
+            }
         }
     return FAILURE;
 }
@@ -169,12 +177,14 @@ void hl_release(void *heap, void *block) {
     }
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
-    // int i = sizeof(heap_header_t);
-    // int j = sizeof(block_info_t);
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
     if (finder!=NULL) {
         finder->allocated=0;
         block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
+        if ((uintptr_t)next_block%ALIGNMENT!=0){
+            int rem = (uintptr_t)next_block%ALIGNMENT;
+            next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
+        }
         next_block=find_block(header, next_block, next_block->block_size);
         if (next_block!=NULL && next_block->allocated==0){
             int new_size=finder->block_size+next_block->block_size;
