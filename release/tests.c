@@ -359,25 +359,25 @@ int test09() {
  *
  */
 int test10() {
-    // char heap1[HEAP_SIZE];
-    // char heap2[HEAP_SIZE];
-    // hl_init(heap1, HEAP_SIZE);   
-    // hl_init(heap2, HEAP_SIZE);    
-    // int *block = hl_alloc(heap1, 8); 
-    // int *block2 = NULL; 
-    // int *resize_block=hl_resize(heap2, block2, 8); 
-    // if (memcmp(block,block,sizeof(heap))==0){
-    //     return SUCCESS;
-    // }
-
-    // return FAILURE;
-    char heap2[HEAP_SIZE];  
+    char heap1[HEAP_SIZE];
+    char heap2[HEAP_SIZE];
+    hl_init(heap1, HEAP_SIZE);   
     hl_init(heap2, HEAP_SIZE);    
+    int *block = hl_alloc(heap1, 8); 
     int *block2 = NULL; 
     int *resize_block=hl_resize(heap2, block2, 8); 
-    if (resize_block!=NULL){
+    if (memcmp(block,resize_block,sizeof(block_info_t)*8)==0){
         return SUCCESS;
     }
+
+
+    // char heap2[HEAP_SIZE];  
+    // hl_init(heap2, HEAP_SIZE);    
+    // int *block2 = NULL; 
+    // int *resize_block=hl_resize(heap2, block2, 8); 
+    // if (resize_block!=NULL){
+    //     return SUCCESS;
+    // }
 
     return FAILURE;
 }
