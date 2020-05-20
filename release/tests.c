@@ -282,7 +282,7 @@ int test06() {
 int test07() {
     char heap[HEAP_SIZE];
     hl_init(heap, HEAP_SIZE);     
-    int *block1 = hl_alloc(heap, 8);
+    hl_alloc(heap, 8);
     int *block3 = hl_alloc(heap, 10);
     hl_release(heap, block3);
     int *block2 = hl_alloc(heap, 8);
