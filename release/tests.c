@@ -295,7 +295,7 @@ int test07() {
  * for that thing!
  *
  * FUNCTIONS BEING TESTED: hl_release & hl_alloc
- * SPECIFICATION BEING TESTED: if block is zero, acts as NOP
+ * SPECIFICATION BEING TESTED: if block is zero, release acts as NOP
  *
  * MANIFESTATION OF ERROR:
  */
@@ -307,13 +307,12 @@ int test08() {
     hl_alloc(heap, 64);  
     hl_alloc(heap, 512); 
     int *block = hl_alloc(heap, 800);
+    hl_release(heap, block);
     hl_init(heap2, HEAP_SIZE); 
     hl_alloc(heap2, 8);
     hl_alloc(heap2, 64);  
     hl_alloc(heap2, 512); 
-    int *block2 = hl_alloc(heap2, 800);
-    heap_header_t *header = (heap_header_t *)heap;
-    hl_release(heap, block);
+    hl_alloc(heap2, 800);
     if (memcmp(heap,heap2,sizeof(heap))==0){
         return SUCCESS;
     }
