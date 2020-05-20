@@ -238,7 +238,7 @@ int test05() {
  
     int *array = hl_alloc(heap, 0);
 
-    if (array ==0){
+    if (array ==NULL){
         return SUCCESS;
     }
     return FAILURE;

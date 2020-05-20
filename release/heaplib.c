@@ -74,9 +74,9 @@ void print_debug_sizeof(void *block_addr) {
 
 block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
     block_info_t *curr_block =header->first_block;
-    int i = (uintptr_t)curr_block;
+    void* i = curr_block;
     // searching through blocks, looking for one given
-    while (i<(uintptr_t)(ADD_BYTES((uintptr_t)header,header->heap_size))){
+    while (i<(ADD_BYTES(header,header->heap_size))){
        if (curr_block==block) { // found it!
            return curr_block;
        }
