@@ -342,7 +342,7 @@ int test09() {
     block_info_t *new_block2 = ADD_BYTES(block2, sizeof(block_info_t));
     memset(new_block2,'a',4);
     hl_resize(heap, block, 16);
-    if (memcmp(block,block2,sizeof(notsure))==0){
+    if (memcmp(block,block2,sizeof(block_info_t)*8)==0){
         return SUCCESS;
     }
     return FAILURE;
