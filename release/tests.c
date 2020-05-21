@@ -429,7 +429,7 @@ int test13() {
     int *block5 = hl_alloc(heap, 2);
     int *block6 = hl_alloc(heap, 2);
     int *block7 = hl_alloc(heap, 2);
-    if (block7==block3){
+    if (block7==block3 && block6==block2 && block5==block1){
         return SUCCESS;
     }
 
