@@ -100,9 +100,11 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
  * Initializes heap metadata and first block metadata
  */
   int hl_init(void *heap, unsigned int heap_size) {
-    
+    mutex_lock(&malloc_lock);
     if (heap_size < MIN_HEAP_SIZE){
-        return FAILURE; 
+
+        mutex_unlock(&malloc_lock);
+        return FAILURE;
     }
     //ensure heap is 8-byte aligned
     if ((uintptr_t)heap%ALIGNMENT!=0){
@@ -124,6 +126,7 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
     block_head->allocated=0;
     block_head->block_size=heap_size-(sizeof(heap_header_t));
  
+    mutex_unlock(&malloc_lock);
     return SUCCESS;
 }
  
@@ -138,7 +141,9 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
  */
 // The size of the header (~8 bytes) is not the size of the entire heap
 void *hl_alloc(void *heap, unsigned int block_size) {
+    mutex_lock(&malloc_lock);
     if (block_size ==0){
+        mutex_unlock(&malloc_lock);
         return NULL;
     }
     heap_header_t *header = (heap_header_t *)heap;
@@ -166,6 +171,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 curr_block=ADD_BYTES(curr_block,(ALIGNMENT-rem));
             }
         }
+    mutex_unlock(&malloc_lock);
     return FAILURE;
 }
  
@@ -175,7 +181,9 @@ void *hl_alloc(void *heap, unsigned int block_size) {
  * YOUR COMMENTS GO HERE.
  */
 void hl_release(void *heap, void *block) {
+    mutex_lock(&malloc_lock);
     if (block==NULL){
+        mutex_unlock(&malloc_lock);
         return;
     }
     block = ADD_BYTES(block, -sizeof(block_info_t));
@@ -198,6 +206,7 @@ void hl_release(void *heap, void *block) {
             finder->block_size=new_size;
     }
     }
+    mutex_unlock(&malloc_lock);
 }
  
 /* See the .h for the advertised behavior of this library function.
@@ -206,10 +215,13 @@ void hl_release(void *heap, void *block) {
  * YOUR COMMENTS GO HERE.
  */
 void *hl_resize(void *heap, void *block, unsigned int new_size) {
-     if (new_size==0){
+    mutex_lock(&malloc_lock);
+    if (new_size==0){
+         mutex_unlock(&malloc_lock);
         return FAILURE;
     }
     if (block==0){
+        mutex_unlock(&malloc_lock);
         return hl_alloc(heap,new_size);
     }
     block = ADD_BYTES(block, -sizeof(block_info_t));
@@ -219,16 +231,23 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
     new_size=new_size+sizeof(block_info_t);
     if (finder->block_size>=new_size){
         finder->block_size = new_size;
+        mutex_unlock(&malloc_lock);
         return ADD_BYTES(finder, sizeof(block_info_t));;
     }else{
+        mutex_unlock(&malloc_lock);
         block_info_t* new_block=hl_alloc(heap, new_size);
+        mutex_lock(&malloc_lock);
         if (new_block!=NULL){
             new_block->allocated=1;
             new_block->block_size=new_size;
             memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
-            hl_release(heap,finder); 
+            mutex_unlock(&malloc_lock);
+            hl_release(heap,finder);
+            mutex_lock(&malloc_lock);
+            mutex_unlock(&malloc_lock); 
             return ADD_BYTES(new_block, sizeof(block_info_t)); 
         }
     }
+    mutex_unlock(&malloc_lock);
     return FAILURE;
 }
