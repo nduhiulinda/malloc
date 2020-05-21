@@ -316,6 +316,8 @@ int test09() {
 		   resized, 16); 
 
 	printf("resized[%d] =[%c]\n", i, resized[i]);
+    printf(" size of resized[%d] =[%d]\n", i, sizeof(char));
+
     #endif
         if (resized[i]!='a'){
             same = 0;
