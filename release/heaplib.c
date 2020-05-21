@@ -92,19 +92,6 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
     }
     return NULL;
 }
-
-void *align(void *heap, void *block){
-    heap_header_t *header = (heap_header_t *)heap;
-    if ((uintptr_t)block%ALIGNMENT!=0){
-        int rem = (uintptr_t)block%ALIGNMENT;
-        if (ADD_BYTES(block,(ALIGNMENT-rem)) < ADD_BYTES(header,header->heap_size)){
-            block=ADD_BYTES(block,(ALIGNMENT-rem));
-        }else{
-            block=NULL;
-        }
-    }
-    return block;
-}
  
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.
@@ -127,7 +114,12 @@ void *align(void *heap, void *block){
     header->heap_size = heap_size;
     //initialize first block metadata
     block_info_t *block_head = ADD_BYTES(heap, sizeof(heap_header_t));
-    block_head=align(heap,block_head);
+ 
+    if ((uintptr_t)block_head%ALIGNMENT!=0){
+        int rem = (uintptr_t)block_head%ALIGNMENT;
+        block_head=ADD_BYTES(block_head,(ALIGNMENT-rem));
+    }
+    
     header->first_block = block_head;
     block_head->allocated=0;
     block_head->block_size=heap_size-(sizeof(heap_header_t));
@@ -159,14 +151,20 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
                 block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
-                new_block=align(heap,new_block);
+                if ((uintptr_t)new_block%ALIGNMENT!=0){
+                  int rem = (uintptr_t)new_block%ALIGNMENT;
+                  new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
+                }
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
             }
             i+=curr_block->block_size;
             curr_block=ADD_BYTES(curr_block, curr_block->block_size);
-            curr_block=align(heap,curr_block);
+            if ((uintptr_t)curr_block%ALIGNMENT!=0){
+                int rem = (uintptr_t)curr_block%ALIGNMENT;
+                curr_block=ADD_BYTES(curr_block,(ALIGNMENT-rem));
+            }
         }
     return FAILURE;
 }
@@ -187,7 +185,10 @@ void hl_release(void *heap, void *block) {
     if (finder!=NULL) {
         finder->allocated=0;
         block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
-        next_block=align(heap,next_block);
+        if ((uintptr_t)next_block%ALIGNMENT!=0){
+            int rem = (uintptr_t)next_block%ALIGNMENT;
+            next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
+        }
         next_block=find_block(header, next_block, next_block->block_size);
         if (next_block!=NULL && next_block->allocated==0){
             int new_size=finder->block_size+next_block->block_size;
