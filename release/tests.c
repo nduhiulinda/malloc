@@ -314,7 +314,7 @@ int test09() {
         }
     }
     return SUCCESS;
-}s
+}
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
