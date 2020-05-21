@@ -322,7 +322,7 @@ int test09() {
     #endif
         resized_val = ADD_BYTES(resized, i);
         char val = *resized_val;
-        if (!='a'){
+        if (val!='a'){
             same = 0;
             #ifdef PRINT_DEBUG
             printf("same = %d\n", same);
