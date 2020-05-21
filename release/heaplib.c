@@ -240,6 +240,8 @@ void hl_release(void *heap, void *block) {
     printf("finder:%p\n",finder);
     printf("finder->allocated:%d\n",finder->allocated);
     if (finder!=NULL) {
+        printf("finder:%p\n",finder);
+        printf("finder->allocated:%d\n",finder->allocated);
         finder->allocated=0;
         block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
         if ((uintptr_t)next_block%ALIGNMENT!=0){
