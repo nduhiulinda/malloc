@@ -153,7 +153,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     int j = sizeof(block_info_t);
         block_info_t *curr_block =header->first_block;
         printf("i+block_size+j:%d\n",i+block_size+j);
-        printf("i+block_size+j:%d\n",header->heap_size);
+        printf("heap size:%d\n",header->heap_size);
         while (i+block_size+j<header->heap_size){
             printf("i:%d\n",i);
             if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
@@ -170,6 +170,8 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 mutex_unlock(&malloc_lock);
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
             }
+            printf("curr_block:%p\n",curr_block);
+            printf("curr_block->block_size:%d\n",curr_block->block_size);
             i+=curr_block->block_size;
             curr_block=ADD_BYTES(curr_block, curr_block->block_size);
             if ((uintptr_t)curr_block%ALIGNMENT!=0){
