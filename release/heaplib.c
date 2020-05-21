@@ -164,6 +164,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 }
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
+                mutex_unlock(&malloc_lock);
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
             }
             i+=curr_block->block_size;
