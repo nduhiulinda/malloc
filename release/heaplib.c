@@ -83,6 +83,7 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
        if (curr_block==block) { // found it!
            return curr_block;
        }
+       printf("block size:%d\n",curr_block->block_size);
        i+=curr_block->block_size;
        curr_block=ADD_BYTES(curr_block, curr_block->block_size);
        if ((uintptr_t)curr_block%ALIGNMENT!=0){
