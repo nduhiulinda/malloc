@@ -308,6 +308,7 @@ int test09() {
     int *block = hl_alloc(heap, 8);
     memset(block,'a',8);
     int *resized=hl_resize(heap, block, 16);
+    int same = 1;
     for (int i=0; i<8; i++){
     #ifdef PRINT_DEBUG
     printf("block starts at addr %p\n"   // C printing trick.
@@ -317,10 +318,16 @@ int test09() {
 	printf("resized[%d] =[%c]\n", i, resized[i]);
     #endif
         if (resized[i]!='a'){
-            return FAILURE;
+            same = 0;
+            #ifdef PRINT_DEBUG
+            printf("same = %d\n", same);
+            #endif
         }
     }
-    return SUCCESS;
+    if (same){
+        return SUCCESS;
+    }
+    return FAILURE;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
