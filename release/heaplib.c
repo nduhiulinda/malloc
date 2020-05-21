@@ -102,7 +102,7 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
   int hl_init(void *heap, unsigned int heap_size) {
     
     if (heap_size < MIN_HEAP_SIZE){
-        return FAILURE;
+        return FAILURE; 
     }
     //ensure heap is 8-byte aligned
     if ((uintptr_t)heap%ALIGNMENT!=0){
@@ -146,7 +146,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     int j = sizeof(block_info_t);
         block_info_t *curr_block =header->first_block;
         while (i+block_size+j<header->heap_size){
-            if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
+            if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
