@@ -237,6 +237,8 @@ void hl_release(void *heap, void *block) {
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
+    printf("finder:%p\n",finder);
+    printf("finder->allocated:%d\n",finder->allocated);
     if (finder!=NULL) {
         finder->allocated=0;
         block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
@@ -253,6 +255,7 @@ void hl_release(void *heap, void *block) {
             finder->block_size=new_size;
     }
     }
+
     mutex_unlock(&malloc_lock);
 }
 
