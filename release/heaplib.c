@@ -165,7 +165,6 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
                 block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
-                printf("new_block->block_size:%d\n",new_block->block_size);
                 printf("new_block:%p\n",new_block);
                 printf("curr_block->block_size:%d\n",curr_block->block_size);
                 if ((uintptr_t)new_block%ALIGNMENT!=0){
@@ -173,6 +172,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                   new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
                 }
                 new_block->block_size= old_size - curr_block->block_size;
+                printf("new_block->block_size:%d\n",new_block->block_size);
                 new_block->allocated=0;
                 mutex_unlock(&malloc_lock);
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
