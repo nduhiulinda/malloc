@@ -308,6 +308,7 @@ int test09() {
     int *block = hl_alloc(heap, 8);
     memset(block,'a',8);
     int *resized=hl_resize(heap, block, 16);
+    int *resized_val;
     int same = 1;
     for (int i=0; i<8; i++){
     #ifdef PRINT_DEBUG
@@ -319,7 +320,9 @@ int test09() {
     printf(" size of resized[%d] =%ldu\n", i, sizeof(char));
 
     #endif
-        if ((int*)ADD_BYTES(resized, i)!='a'){
+        resized_val = ADD_BYTES(resized, i);
+        char val = *resized_val;
+        if (!='a'){
             same = 0;
             #ifdef PRINT_DEBUG
             printf("same = %d\n", same);
