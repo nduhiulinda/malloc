@@ -142,11 +142,12 @@ void *hl_alloc(void *heap, unsigned int block_size) {
         return NULL;
     }
     heap_header_t *header = (heap_header_t *)heap;
-    int i = sizeof(heap_header_t);
     int j = sizeof(block_info_t);
+    int heapsize=header->heap_size;
         block_info_t *curr_block =header->first_block;
-        while (i+block_size+j<header->heap_size){
-            if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
+        void* k= curr_block;
+        while (k<(ADD_BYTES(header,header->heap_size))){
+            if ((curr_block->allocated==0) && j+block_size<=curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
@@ -159,11 +160,11 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 new_block->allocated=0;
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
             }
-            i+=curr_block->block_size;
+            k+=curr_block->block_size;
             curr_block=ADD_BYTES(curr_block, curr_block->block_size);
             if ((uintptr_t)curr_block%ALIGNMENT!=0){
-                int rem = (uintptr_t)curr_block%ALIGNMENT;
-                curr_block=ADD_BYTES(curr_block,(ALIGNMENT-rem));
+              int rem = (uintptr_t)curr_block%ALIGNMENT;
+              curr_block=ADD_BYTES(curr_block,(ALIGNMENT-rem));
             }
         }
     return FAILURE;
