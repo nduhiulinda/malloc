@@ -309,6 +309,13 @@ int test09() {
     memset(block,'a',8);
     int *resized=hl_resize(heap, block, 16);
     for (int i=0; i<8; i++){
+    #ifdef PRINT_DEBUG
+    printf("block starts at addr %p\n"   // C printing trick.
+		   "block_size = %d\n",            // Notice: no commas between lines
+		   resized, 16); 
+
+	printf("resized[%d] =[%c]\n", i, resized[i]);
+    #endif
         if (resized[i]!='a'){
             return FAILURE;
         }
