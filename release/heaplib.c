@@ -146,7 +146,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     int j = sizeof(block_info_t);
         block_info_t *curr_block =header->first_block;
         while (i+block_size+j<header->heap_size){
-            if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
+            if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
