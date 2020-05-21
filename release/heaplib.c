@@ -176,27 +176,31 @@ void *hl_alloc(void *heap, unsigned int block_size) {
  */
 void hl_release(void *heap, void *block) {
     if (block==NULL){
-        return;
-    }
+        return; }
     block = ADD_BYTES(block, -sizeof(block_info_t));
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
+    int bl_size;
     if (finder!=NULL) {
         finder->allocated=0;
         block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
         if ((uintptr_t)next_block%ALIGNMENT!=0){
             int rem = (uintptr_t)next_block%ALIGNMENT;
-            next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
-        }
-        next_block=find_block(header, next_block, next_block->block_size);
+            if ((uintptr_t)ADD_BYTES(next_block,(ALIGNMENT-rem))<(header->heap_size)){
+                next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
+                bl_size=next_block->block_size;
+            }else{
+                next_block=NULL;
+                bl_size=0;
+            }}
+        next_block=find_block(header, next_block,bl_size);
         if (next_block!=NULL && next_block->allocated==0){
             int new_size=finder->block_size+next_block->block_size;
             next_block->block_size=0;
             next_block->allocated=0;
             next_block=NULL;
-            finder->block_size=new_size;
-    }
+            finder->block_size=new_size;}
     }
 }
 
