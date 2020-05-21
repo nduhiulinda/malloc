@@ -3,7 +3,17 @@
 
 #ifdef __riscv
 void mutex_unlock_riscv(volatile int* lock){
+  //TODO: your implementation here!
+  int result;
+  asm ("SW %0, 0(%[oplock])\n\t"
+       :"=r"(result)
+       :[oplock]"r"(lock)
+  );
 
+  return;
+}
+
+void mutex_lock_riscv(volatile int* lock){
   //TODO: your implementation here!
   int result;
   asm ("test_and_set: LI %0, 1\n\t"
@@ -13,16 +23,6 @@ void mutex_unlock_riscv(volatile int* lock){
                       "BNEZ %0, test_and_set\n\t" // successfully claimed?
       :"=r"(result)
       :[oplock]"r"(lock)
-  );
-  return;
-}
-
-void mutex_lock_riscv(volatile int* lock){
-  //TODO: your implementation here!
-  int result;
-  asm ("SW %2, 0(%[oplock])\n\t"
-       :"=r"(result)
-       :[oplock]"r"(lock)
   );
   return;
 }

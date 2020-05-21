@@ -222,12 +222,12 @@ void hl_release(void *heap, void *block) {
 void *hl_resize(void *heap, void *block, unsigned int new_size) {
     mutex_lock(&malloc_lock);
     if (new_size==0){
-         mutex_unlock(&malloc_lock);
+        mutex_unlock(&malloc_lock);
         return FAILURE;
     }
     if (block==0){
         mutex_unlock(&malloc_lock);
-        return hl_alloc(heap,new_size);
+        return malloc(new_size);
     }
     block = ADD_BYTES(block, -sizeof(block_info_t));
     heap_header_t *header = (heap_header_t *)heap;
@@ -239,16 +239,12 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
         mutex_unlock(&malloc_lock);
         return ADD_BYTES(finder, sizeof(block_info_t));;
     }else{
-        mutex_unlock(&malloc_lock);
-        block_info_t* new_block=hl_alloc(heap, new_size);
-        mutex_lock(&malloc_lock);
+        block_info_t* new_block=malloc(new_size);
         if (new_block!=NULL){
             new_block->allocated=1;
             new_block->block_size=new_size;
             memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
-            mutex_unlock(&malloc_lock);
-            hl_release(heap,finder);
-            mutex_lock(&malloc_lock);
+            free(finder);
             mutex_unlock(&malloc_lock); 
             return ADD_BYTES(new_block, sizeof(block_info_t)); 
         }
