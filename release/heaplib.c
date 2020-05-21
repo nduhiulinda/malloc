@@ -247,12 +247,15 @@ void hl_release(void *heap, void *block) {
             next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
         }
         next_block=find_block(header, next_block, next_block->block_size);
+        printf("next_block:%p\n",next_block);
+        printf("next_block->block_size:%d\n",next_block->block_size);
         if (next_block!=NULL && next_block->allocated==0){
             int new_size=finder->block_size+next_block->block_size;
             next_block->block_size=0;
             next_block->allocated=0;
             next_block=NULL;
             finder->block_size=new_size;
+            printf("new_size:%d\n",new_size);
     }
     }
 
