@@ -237,8 +237,6 @@ void hl_release(void *heap, void *block) {
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
-    printf("finder:%p\n",finder);
-    printf("finder->allocated:%d\n",finder->allocated);
     if (finder!=NULL) {
         printf("finder:%p\n",finder);
         printf("finder->allocated:%d\n",finder->allocated);
@@ -251,6 +249,7 @@ void hl_release(void *heap, void *block) {
         next_block=find_block(header, next_block, next_block->block_size);
         printf("next_block:%p\n",next_block);
         printf("next_block->block_size:%d\n",next_block->block_size);
+        printf("finder->block_size:%d\n",finder->block_size);
         if (next_block!=NULL && next_block->allocated==0){
             int new_size=finder->block_size+next_block->block_size;
             next_block->block_size=0;
