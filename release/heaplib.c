@@ -177,6 +177,40 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     mutex_unlock(&malloc_lock);
     return FAILURE;
 }
+
+
+
+void *hl_alloc2(void *heap, unsigned int block_size) {
+    if (block_size ==0){
+        return NULL;
+    }
+    heap_header_t *header = (heap_header_t *)heap;
+    int i = sizeof(heap_header_t);
+    int j = sizeof(block_info_t);
+        block_info_t *curr_block =header->first_block;
+        while (i+block_size+j<header->heap_size){
+            if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
+                int old_size = curr_block->block_size;
+                curr_block->block_size = block_size + j;
+                curr_block->allocated = 1;
+                block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
+                if ((uintptr_t)new_block%ALIGNMENT!=0){
+                  int rem = (uintptr_t)new_block%ALIGNMENT;
+                  new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
+                }
+                new_block->block_size= old_size - curr_block->block_size;
+                new_block->allocated=0;
+                return ADD_BYTES(curr_block, sizeof(block_info_t));
+            }
+            i+=curr_block->block_size;
+            curr_block=ADD_BYTES(curr_block, curr_block->block_size);
+            if ((uintptr_t)curr_block%ALIGNMENT!=0){
+                int rem = (uintptr_t)curr_block%ALIGNMENT;
+                curr_block=ADD_BYTES(curr_block,(ALIGNMENT-rem));
+            }
+        }
+    return FAILURE;
+}
  
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.
@@ -213,6 +247,33 @@ void hl_release(void *heap, void *block) {
     }
     mutex_unlock(&malloc_lock);
 }
+
+
+void hl_release2(void *heap, void *block) {
+    if (block==NULL){
+        return;
+    }
+    block = ADD_BYTES(block, -sizeof(block_info_t));
+    heap_header_t *header = (heap_header_t *)heap;
+    block_info_t *main_block=(block_info_t *)block;
+    block_info_t* finder = find_block(header,main_block,main_block->block_size);
+    if (finder!=NULL) {
+        finder->allocated=0;
+        block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
+        if ((uintptr_t)next_block%ALIGNMENT!=0){
+            int rem = (uintptr_t)next_block%ALIGNMENT;
+            next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
+        }
+        next_block=find_block(header, next_block, next_block->block_size);
+        if (next_block!=NULL && next_block->allocated==0){
+            int new_size=finder->block_size+next_block->block_size;
+            next_block->block_size=0;
+            next_block->allocated=0;
+            next_block=NULL;
+            finder->block_size=new_size;
+    }
+    }
+}
  
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.
@@ -227,7 +288,7 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
     }
     if (block==0){
         mutex_unlock(&malloc_lock);
-        return malloc(new_size);
+        return hl_alloc2(heap,new_size);
     }
     block = ADD_BYTES(block, -sizeof(block_info_t));
     heap_header_t *header = (heap_header_t *)heap;
@@ -239,12 +300,12 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
         mutex_unlock(&malloc_lock);
         return ADD_BYTES(finder, sizeof(block_info_t));;
     }else{
-        block_info_t* new_block=malloc(new_size);
+        block_info_t* new_block=hl_alloc2(heap, new_size);
         if (new_block!=NULL){
             new_block->allocated=1;
             new_block->block_size=new_size;
             memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
-            free(finder);
+            hl_release2(heap,finder);
             mutex_unlock(&malloc_lock); 
             return ADD_BYTES(new_block, sizeof(block_info_t)); 
         }

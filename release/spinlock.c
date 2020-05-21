@@ -9,7 +9,6 @@ void mutex_unlock_riscv(volatile int* lock){
        :"=r"(result)
        :[oplock]"r"(lock)
   );
-
   return;
 }
 
