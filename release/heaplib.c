@@ -188,6 +188,8 @@ void hl_release(void *heap, void *block) {
         mutex_unlock(&malloc_lock);
         return;
     }
+    printf("release\n");
+    fflush(NULL);
     block = ADD_BYTES(block, -sizeof(block_info_t));
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
