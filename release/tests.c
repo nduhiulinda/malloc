@@ -315,11 +315,11 @@ int test09() {
 		   "block_size = %d\n",            // Notice: no commas between lines
 		   resized, 16); 
 
-	printf("resized[%d] =[%c]\n", i, resized[i]);
+	printf("resized[%d] = %p\n", i, (int*)ADD_BYTES(resized, i));
     printf(" size of resized[%d] =%ldu\n", i, sizeof(char));
 
     #endif
-        if (resized[i]!='a'){
+        if ((int*)ADD_BYTES(resized, i)!='a'){
             same = 0;
             #ifdef PRINT_DEBUG
             printf("same = %d\n", same);
