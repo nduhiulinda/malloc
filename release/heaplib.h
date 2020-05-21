@@ -7,7 +7,7 @@
 #define SUCCESS 1
 #define FAILURE 0
 
-// #define ADD_BYTES(base_addr, num_bytes) (((void *)(base_addr)) + (num_bytes))
+#define ADD_BYTES(base_addr, num_bytes) (((void *)(base_addr)) + (num_bytes))
 
 
 

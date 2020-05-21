@@ -310,7 +310,7 @@ int test09() {
     int *resized=hl_resize(heap, block, 16);
     for (int i=0; i<8; i++){
         if (resized[i]!='a'){
-            return FAILURE
+            return FAILURE;
         }
     }
     return SUCCESS;
