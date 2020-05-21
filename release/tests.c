@@ -426,7 +426,7 @@ int test13() {
     hl_release(heap,block1);
     // hl_release(heap,block2);
     // hl_release(heap,block3);
-    int *block5 = hl_alloc(heap, 20);
+    hl_alloc(heap, 20);
     // int *block6 = hl_alloc(heap, 20);
     // int *block7 = hl_alloc(heap, 400);
     // if (block7==block3 && block6==block2 && block5==block1){
