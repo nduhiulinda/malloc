@@ -143,7 +143,6 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     }
     heap_header_t *header = (heap_header_t *)heap;
     int j = sizeof(block_info_t);
-    int heapsize=header->heap_size;
         block_info_t *curr_block =header->first_block;
         void* k= curr_block;
         while (k<(ADD_BYTES(header,header->heap_size))){
