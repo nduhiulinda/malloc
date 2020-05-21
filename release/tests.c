@@ -420,29 +420,18 @@ int test12() {
 int test13() {
     char heap[HEAP_SIZE];  
     hl_init(heap, HEAP_SIZE);    
-    int *block1 = hl_alloc(heap, 2);
-    printf("block1 alloc:\n"); 
-    int *block2 = hl_alloc(heap, 2); 
-    printf("block2 alloc:\n");
-    int *block3 = hl_alloc(heap, 2);
-    printf("block3 alloc:\n");
-    hl_release(heap,block1);
-    printf("block1 released:\n");
-    hl_release(heap,block2);
-    printf("block2 released:\n");
+    int *block1 = hl_alloc(heap, 2); 
+    int *block2 = hl_alloc(heap, 2);
+    int *block3 = hl_alloc(heap, 40);
     hl_release(heap,block3);
-    printf("block3 released:\n");
+    hl_release(heap,block2);
+    hl_release(heap,block1);
     int *block5 = hl_alloc(heap, 2);
-    printf("block5 alloc:\n");
     int *block6 = hl_alloc(heap, 2);
-    printf("block6 alloc:\n");
-    int *block7 = hl_alloc(heap, 2);
-    printf("block7 alloc:\n");
+    int *block7 = hl_alloc(heap, 40);
     if (block7==block3 && block6==block2 && block5==block1){
-        printf("success:\n");
         return SUCCESS;
     }
-    printf("failure:\n");
     return FAILURE;
 }
 
