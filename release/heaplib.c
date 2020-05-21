@@ -154,7 +154,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 }
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
-                return curr_block;
+                return ADD_BYTES(curr_block, sizeof(block_info_t));
             }
             i+=curr_block->block_size;
             curr_block=ADD_BYTES(curr_block, curr_block->block_size);
@@ -175,6 +175,7 @@ void hl_release(void *heap, void *block) {
     if (block==NULL){
         return;
     }
+    block = ADD_BYTES(block, -sizeof(block_info_t));
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
@@ -208,13 +209,14 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
     if (block==0){
         return hl_alloc(heap,new_size);
     }
+    block = ADD_BYTES(block, -sizeof(block_info_t));
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
     new_size=new_size+sizeof(block_info_t);
     if (finder->block_size>=new_size){
         finder->block_size = new_size;
-        return finder;
+        return ADD_BYTES(finder, sizeof(block_info_t));;
     }else{
         block_info_t* new_block=hl_alloc(heap, new_size);
         if (new_block!=NULL){
@@ -222,7 +224,7 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
             new_block->block_size=new_size;
             memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
             hl_release(heap,finder); 
-            return new_block; 
+            return ADD_BYTES(new_block, sizeof(block_info_t)); 
         }
     }
     return FAILURE;

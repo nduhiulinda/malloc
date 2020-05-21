@@ -11,19 +11,6 @@
 
 #define ADD_BYTES(base_addr, num_bytes) (((void *)(base_addr)) + (num_bytes))
 
-typedef struct _block_info_t {
-    unsigned int block_size;
-    // void *block;
-    unsigned int allocated;
-} block_info_t;
-
-typedef struct _heap_header_t {
-	unsigned int heap_size;
-    // unsigned int free_heap_size;
-    block_info_t blocks[1];
-    // bool in_use_f[0];
-} heap_header_t ;
-
 // TODO: Add test descriptions as you add more tests...
 const char* test_descriptions[] = {
     /* our SPEC tests */
@@ -296,16 +283,10 @@ int test08() {
     char heap2[HEAP_SIZE];
     hl_init(heap, HEAP_SIZE); 
     hl_alloc(heap, 8);
-    hl_alloc(heap, 64);  
-    hl_alloc(heap, 512); 
-    int *block = hl_alloc(heap, 800);
-    hl_release(heap, block);
-    hl_init(heap2, HEAP_SIZE); 
-    hl_alloc(heap2, 8);
-    hl_alloc(heap2, 64);  
-    hl_alloc(heap2, 512); 
-    hl_alloc(heap2, 800);
-    if (memcmp(heap,heap2,sizeof(heap))==0){
+    hl_alloc(heap, 64);
+    memcpy(heap2,heap,HEAP_SIZE);
+    hl_release(heap, NULL);
+    if (memcmp(heap,heap2,HEAP_SIZE)==0){
         return SUCCESS;
     }
     return FAILURE;
@@ -323,22 +304,17 @@ int test08() {
  */
 int test09() {
     char heap[HEAP_SIZE];
-    char heap2[HEAP_SIZE];
     hl_init(heap, HEAP_SIZE);     
-    hl_init(heap2, HEAP_SIZE);
-    int *block = hl_alloc(heap, 4);
-    block_info_t *new_block = ADD_BYTES(block, sizeof(block_info_t));
-    memset(new_block,'a',4);
-    int *block2 = hl_alloc(heap2, 4);
-    block_info_t *new_block2 = ADD_BYTES(block2, sizeof(block_info_t));
-    memset(new_block2,'a',4);
-    int *resized=hl_resize(heap, block, 8);
-    block_info_t *resizedb = ADD_BYTES(resized, sizeof(block_info_t));
-    if (memcmp(new_block2,resizedb,4)==0){
-        return SUCCESS;
+    int *block = hl_alloc(heap, 8);
+    memset(block,'a',8);
+    int *resized=hl_resize(heap, block, 16);
+    for (int i=0; i<8; i++){
+        if (resized[i]!='a'){
+            return FAILURE
         }
-    return FAILURE;
-}
+    }
+    return SUCCESS;
+}s
 
 /* Find something that you think heaplame does wrong. Make a test
  * for that thing!
