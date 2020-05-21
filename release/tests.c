@@ -421,18 +421,18 @@ int test13() {
     char heap[HEAP_SIZE];  
     hl_init(heap, HEAP_SIZE);    
     int *block1 = hl_alloc(heap, 20); 
-    int *block2 = hl_alloc(heap, 20);
-    int *block3 = hl_alloc(heap, 400);
+    //int *block2 = hl_alloc(heap, 20);
+    //int *block3 = hl_alloc(heap, 400);
     hl_release(heap,block1);
-    hl_release(heap,block2);
-    hl_release(heap,block3);
+    // hl_release(heap,block2);
+    // hl_release(heap,block3);
     int *block5 = hl_alloc(heap, 20);
-    int *block6 = hl_alloc(heap, 20);
-    int *block7 = hl_alloc(heap, 400);
-    if (block7==block3 && block6==block2 && block5==block1){
-        return SUCCESS;
-    }
-    return FAILURE;
+    // int *block6 = hl_alloc(heap, 20);
+    // int *block7 = hl_alloc(heap, 400);
+    // if (block7==block3 && block6==block2 && block5==block1){
+    //     return SUCCESS;
+    // }
+     return FAILURE;
 }
 
 /* Find something that you think heaplame does wrong. Make a test
