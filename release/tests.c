@@ -431,8 +431,14 @@ int test13() {
     printf("2\n");
     fflush(NULL);
     int *block5=hl_alloc(heap, 20);
+    printf("realloc 1\n");
+    fflush(NULL);
     int *block6 = hl_alloc(heap, 20);
+    printf("realloc 2\n");
+    fflush(NULL);
     int *block7 = hl_alloc(heap, 400);
+    printf("realloc 3\n");
+    fflush(NULL);
     printf("3\n");
     fflush(NULL);
     if (block7==block3 && block6==block2 && block5==block1){
