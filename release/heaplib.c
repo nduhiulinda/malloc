@@ -143,6 +143,7 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
 // The size of the header (~8 bytes) is not the size of the entire heap
 void *hl_alloc(void *heap, unsigned int block_size) {
     mutex_lock(&malloc_lock);
+    printf("in alloc \n");
     if (block_size ==0){
         mutex_unlock(&malloc_lock);
         return NULL;
@@ -151,7 +152,10 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     int i = sizeof(heap_header_t);
     int j = sizeof(block_info_t);
         block_info_t *curr_block =header->first_block;
+        printf("i+block_size+j:%d\n",i+block_size+j);
+        printf("i+block_size+j:%d\n",header->heap_size);
         while (i+block_size+j<header->heap_size){
+            printf("i:%d\n",i);
             if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
