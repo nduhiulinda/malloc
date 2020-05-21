@@ -454,10 +454,10 @@ int test14() {
     hl_release(heap,block3);
     hl_release(heap,block2);
     hl_release(heap,block1);
-    int *block5 = hl_alloc(heap, 256);
-    int *block6 = hl_alloc(heap, 480);
+    hl_alloc(heap, 256);
+    hl_alloc(heap, 480);
     int *block7 = hl_alloc(heap, 600);
-    if (block7==NULL && block3==NULL){
+    if (block7==NULL && block3==NULL ){
         return SUCCESS;
     }
     return FAILURE;
