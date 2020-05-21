@@ -104,7 +104,6 @@ block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
   int hl_init(void *heap, unsigned int heap_size) {
     mutex_lock(&malloc_lock);
     if (heap_size < MIN_HEAP_SIZE){
-
         mutex_unlock(&malloc_lock);
         return FAILURE;
     }
