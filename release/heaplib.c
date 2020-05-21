@@ -156,6 +156,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
         printf("heap size:%d\n",header->heap_size);
         while (i+block_size+j<header->heap_size){
             printf("i:%d\n",i);
+            printf("curr_block:%p\n",curr_block);
             printf("curr_block->allocated:%d\n",curr_block->allocated);
             printf("curr_block->block_size:%d\n",curr_block->block_size);
             printf("j+block_size:%d\n",j+block_size);
