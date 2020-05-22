@@ -219,6 +219,7 @@ void *hl_alloc2(void *heap, unsigned int block_size) {
                 if ((uintptr_t)new_block%ALIGNMENT!=0){
                   int rem = (uintptr_t)new_block%ALIGNMENT;
                   new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
+                  curr_block->block_size +=ALIGNMENT-rem;
                 }
                 new_block->block_size= old_size - curr_block->block_size;
                 printf("(alloc realign new alloc) realigned new_block:%p\n",new_block);
@@ -264,6 +265,7 @@ void hl_release(void *heap, void *block) {
         if ((uintptr_t)next_block%ALIGNMENT!=0){
             int rem = (uintptr_t)next_block%ALIGNMENT;
             next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
+            finder->block_size +=ALIGNMENT-rem;
         }
         next_block=find_block(header, next_block, next_block->block_size);
         printf("(release find next block)next_block:%p\n",next_block);
@@ -301,6 +303,7 @@ void hl_release2(void *heap, void *block) {
         if ((uintptr_t)next_block%ALIGNMENT!=0){
             int rem = (uintptr_t)next_block%ALIGNMENT;
             next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
+            finder->block_size +=ALIGNMENT-rem;
         }
         next_block=find_block(header, next_block, next_block->block_size);
         printf("(release find next block)next_block:%p\n",next_block);
