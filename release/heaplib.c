@@ -72,7 +72,7 @@ void print_debug_sizeof(void *block_addr) {
 }
  
  
-block_info_t* find_block(heap_header_t *header, void *block, int block_size) {
+block_info_t* find_block(heap_header_t *header, void *block) {
     if (block==NULL){
         return NULL;
     }
@@ -178,17 +178,15 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
-
-                if (ADD_BYTES(curr_block , curr_block->block_size) >=ADD_BYTES(header,header->heap_size)){
                 block_info_t *new_block =NULL;
-                }else{
-                block_info_t *new_block = ADD_BYTES(curr_block , curr_block->block_size);
-                new_block=align(heap,new_block, curr_block);
-                new_block->block_size= old_size - curr_block->block_size;
-                new_block->allocated=0;
-                printf("(alloc found block to alloc)new_block:%p\n",new_block);
-                printf("(alloc found block to alloc)curr_block->block_size:%d\n",curr_block->block_size);
-                printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
+                if (ADD_BYTES(curr_block , curr_block->block_size) < ADD_BYTES(header,header->heap_size)){
+                    block_info_t *new_block = ADD_BYTES(curr_block , curr_block->block_size);
+                    new_block=align(heap,new_block, curr_block);
+                    new_block->block_size= old_size - curr_block->block_size;
+                    new_block->allocated=0;
+                    printf("(alloc found block to alloc)new_block:%p\n",new_block);
+                    printf("(alloc found block to alloc)curr_block->block_size:%d\n",curr_block->block_size);
+                    printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
                 }
                 mutex_unlock(&malloc_lock);
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
@@ -222,13 +220,12 @@ void *hl_alloc2(void *heap, unsigned int block_size) {
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
-                if (ADD_BYTES(curr_block , curr_block->block_size) >=ADD_BYTES(header,header->heap_size)){
                 block_info_t *new_block =NULL;
-                }else{
-                block_info_t *new_block = ADD_BYTES(curr_block , curr_block->block_size);
-                new_block=align(heap,new_block, curr_block);
-                new_block->block_size= old_size - curr_block->block_size;
-                new_block->allocated=0;
+                if (ADD_BYTES(curr_block , curr_block->block_size) < ADD_BYTES(header,header->heap_size)){
+                    block_info_t *new_block = ADD_BYTES(curr_block , curr_block->block_size);
+                    new_block=align(heap,new_block, curr_block);
+                    new_block->block_size= old_size - curr_block->block_size;
+                    new_block->allocated=0;
                 }
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
             }
