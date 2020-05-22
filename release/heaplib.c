@@ -344,13 +344,14 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
         block_info_t* nnew_block = ADD_BYTES(new_block, -sizeof(block_info_t));
         printf("(resize block to alloc coz didn't fit) new_block:%p\n",nnew_block);
         printf("(resize block to alloc coz didn't fit) new_block->block_size:%d\n",nnew_block->block_size);
-        if (new_block!=NULL){
-            new_block->allocated=1;
-            new_block->block_size=new_size;
-            memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
+        if (nnew_block!=NULL){
+            nnew_block->allocated=1;
+            nnew_block->block_size=new_size;
+            //memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
+            memmove(ADD_BYTES(new_block),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
             hl_release2(heap,finder);
             mutex_unlock(&malloc_lock); 
-            return nnew_block; 
+            return new_block; 
         }
     }
     mutex_unlock(&malloc_lock);
