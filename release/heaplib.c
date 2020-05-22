@@ -366,7 +366,7 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
     if (finder->block_size>=new_block_size){
         finder->block_size = new_block_size;
         mutex_unlock(&malloc_lock);
-        return ADD_BYTES(finder, sizeof(block_info_t));;
+        return ADD_BYTES(finder, sizeof(block_info_t));
     }else{
         block_info_t* new_block=hl_alloc2(heap, new_size);
         block_info_t* nnew_block = ADD_BYTES(new_block, -sizeof(block_info_t));
@@ -377,6 +377,7 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
             nnew_block->block_size=new_block_size;
             //memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
             memmove(new_block,ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
+            finder = ADD_BYTES(finder, sizeof(block_info_t));
             hl_release2(heap,finder);
             mutex_unlock(&malloc_lock); 
             return new_block; 
