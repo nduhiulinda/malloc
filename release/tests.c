@@ -431,34 +431,34 @@ int test13() {
     hl_release(heap,block3);
     printf("2. finished releases\n");
     printf("\n");
-    fflush(NULL);
-    printf("realloc 1\n");
-    int *block5=hl_alloc(heap, 20);
-    printf("realloced block5:%p\n", block5);
-    fflush(NULL);
-    printf("realloc 2\n");
-    int *block6 = hl_alloc(heap, 20);
-    printf("realloced block6:%p\n", block6);
-    fflush(NULL);
-    printf("realloc 3\n");
-    int *block7 = hl_alloc(heap, 400);
-    printf("realloced block7:%p\n", block7);
-    fflush(NULL);
-    printf("finished reallocs\n");
-    printf("\n");
-    fflush(NULL);
-    printf(" check same\n");
-    printf("test block1:%p\n", block1);
-    printf("test block5:%p\n", block5);
-    printf("same\n");
-    printf("test block2:%p\n", block2);
-    printf("test block6:%p\n", block6);
-    printf("same\n");
-    printf("test block3:%p\n", block3);
-    printf("test block7:%p\n", block7);
-    if (block7==block3 && block6==block2 && block5==block1){
-        return SUCCESS;
-    }
+    // fflush(NULL);
+    // printf("realloc 1\n");
+    // int *block5=hl_alloc(heap, 20);
+    // printf("realloced block5:%p\n", block5);
+    // fflush(NULL);
+    // printf("realloc 2\n");
+    // int *block6 = hl_alloc(heap, 20);
+    // printf("realloced block6:%p\n", block6);
+    // fflush(NULL);
+    // printf("realloc 3\n");
+    // int *block7 = hl_alloc(heap, 400);
+    // printf("realloced block7:%p\n", block7);
+    // fflush(NULL);
+    // printf("finished reallocs\n");
+    // printf("\n");
+    // fflush(NULL);
+    // printf(" check same\n");
+    // printf("test block1:%p\n", block1);
+    // printf("test block5:%p\n", block5);
+    // printf("same\n");
+    // printf("test block2:%p\n", block2);
+    // printf("test block6:%p\n", block6);
+    // printf("same\n");
+    // printf("test block3:%p\n", block3);
+    // printf("test block7:%p\n", block7);
+    // if (block7==block3 && block6==block2 && block5==block1){
+    //     return SUCCESS;
+    // }
      return FAILURE;
 }
 
