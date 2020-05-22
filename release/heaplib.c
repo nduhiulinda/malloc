@@ -163,19 +163,21 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
-                block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
-                new_block = find_block(header, new_block);
+                int new_size = old_size - curr_block->block_size;
                 printf("(alloc found block to alloc)new_block:%p\n",new_block);
                 printf("(alloc found block to alloc)curr_block->block_size:%d\n",curr_block->block_size);
-                if (new_block==NULL){
-                    new_block = ADD_BYTES(curr_block, curr_block->block_size);
+                if (new_size>8){
+                    block_info_t * new_block = ADD_BYTES(curr_block, curr_block->block_size);
                     if ((uintptr_t)new_block%ALIGNMENT!=0){
                         int rem = (uintptr_t)new_block%ALIGNMENT;
                         new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
                         curr_block->block_size +=ALIGNMENT-rem;
                     }
-                    new_block->block_size= old_size - curr_block->block_size;
+                    new_block->block_size= new_size;
                     new_block->allocated=0;
+                }
+                if (new_size<=8){
+                    curr_block->block_size += new_size;
                 }
                 printf("(alloc realign new alloc) realigned new_block:%p\n",new_block);
                 printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
@@ -219,18 +221,21 @@ void *hl_alloc2(void *heap, unsigned int block_size) {
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
-                block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
+                int new_size = old_size - curr_block->block_size;
                 printf("(alloc found block to alloc)new_block:%p\n",new_block);
                 printf("(alloc found block to alloc)curr_block->block_size:%d\n",curr_block->block_size);
-                if (new_block==NULL){
-                    new_block = ADD_BYTES(curr_block, curr_block->block_size);
+                if (new_size>8){
+                    block_info_t * new_block = ADD_BYTES(curr_block, curr_block->block_size);
                     if ((uintptr_t)new_block%ALIGNMENT!=0){
                         int rem = (uintptr_t)new_block%ALIGNMENT;
                         new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
                         curr_block->block_size +=ALIGNMENT-rem;
                     }
-                    new_block->block_size= old_size - curr_block->block_size;
+                    new_block->block_size= new_size;
                     new_block->allocated=0;
+                }
+                if (new_size<=8){
+                    curr_block->block_size += new_size;
                 }
                 printf("(alloc realign new alloc) realigned new_block:%p\n",new_block);
                 printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
