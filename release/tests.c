@@ -431,11 +431,11 @@ int test13() {
     hl_release(heap,block3);
     printf("2. finished releases\n");
     printf("\n");
-    // fflush(NULL);
-    // printf("realloc 1\n");
-    // int *block5=hl_alloc(heap, 20);
-    // printf("realloced block5:%p\n", block5);
-    // fflush(NULL);
+    fflush(NULL);
+    printf("realloc 1\n");
+    int *block5=hl_alloc(heap, 20);
+    printf("realloced block5:%p\n", block5);
+    fflush(NULL);
     // printf("realloc 2\n");
     // int *block6 = hl_alloc(heap, 20);
     // printf("realloced block6:%p\n", block6);
