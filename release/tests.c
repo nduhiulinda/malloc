@@ -441,6 +441,15 @@ int test13() {
     fflush(NULL);
     printf("3\n");
     fflush(NULL);
+    printf("same\n");
+    printf("test block1:%p\n", block1);
+    printf("test block5:%p\n", block5);
+    printf("same\n");
+    printf("test block2:%p\n", block2);
+    printf("test block6:%p\n", block6);
+    printf("same\n");
+    printf("test block3:%p\n", block3);
+    printf("test block7:%p\n", block7);
     if (block7==block3 && block6==block2 && block5==block1){
         return SUCCESS;
     }
