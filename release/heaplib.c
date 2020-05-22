@@ -348,7 +348,7 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
             nnew_block->allocated=1;
             nnew_block->block_size=new_size;
             //memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
-            memmove(ADD_BYTES(new_block),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
+            memmove(new_block,ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
             hl_release2(heap,finder);
             mutex_unlock(&malloc_lock); 
             return new_block; 
