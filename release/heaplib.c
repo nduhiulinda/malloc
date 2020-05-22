@@ -176,12 +176,12 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                     printf("(alloc found block to divide in alloc)new_block:%p\n",new_block);
                     new_block->block_size= new_size;
                     new_block->allocated=0;
+                    printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
+
                 }
                 if (new_size<=8){
                     curr_block->block_size += new_size;
                 }
-                printf("(alloc realign new alloc) realigned new_block:%p\n",new_block);
-                printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
                 printf("(alloc curr block after realign)curr_block->block_size:%d\n",curr_block->block_size);
                 printf("(finished alloc: curr block)curr_block:%p\n",curr_block);
                 mutex_unlock(&malloc_lock);
@@ -235,12 +235,12 @@ void *hl_alloc2(void *heap, unsigned int block_size) {
                     printf("(alloc found block to divide in alloc)new_block:%p\n",new_block);
                     new_block->block_size= new_size;
                     new_block->allocated=0;
+                    printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
+
                 }
                 if (new_size<=8){
                     curr_block->block_size += new_size;
                 }
-                printf("(alloc realign new alloc) realigned new_block:%p\n",new_block);
-                printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
                 printf("(alloc curr block after realign)curr_block->block_size:%d\n",curr_block->block_size);
                 printf("(finished alloc: curr block)curr_block:%p\n",curr_block);
                 new_block->allocated=0;
