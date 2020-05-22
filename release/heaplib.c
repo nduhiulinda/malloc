@@ -153,32 +153,28 @@ void *hl_alloc(void *heap, unsigned int block_size) {
         block_info_t *curr_block =header->first_block;
         printf("(alloc initial)i+block_size+j:%d\n",i+block_size+j);
         printf("(alloc initial)heap size:%d\n",header->heap_size);
-        while (i+block_size+j<=header->heap_size){
+        while (i+block_size+j<header->heap_size){
             printf("(alloc while loop)i:%d\n",i);
             printf("curr_block:%p\n",curr_block);
             printf("curr_block->allocated:%d\n",curr_block->allocated);
             printf("curr_block->block_size:%d\n",curr_block->block_size);
             printf("(alloc while loop)j+block_size:%d\n",j+block_size);
-            if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
+            if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
-                block_info_t *new_block = NULL;
-                if (ADD_BYTES(curr_block, curr_block->block_size)<ADD_BYTES(header, header->heap_size)){
-                new_block = ADD_BYTES(curr_block, curr_block->block_size);
+                block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
                 printf("(alloc found block to alloc)new_block:%p\n",new_block);
                 printf("(alloc found block to alloc)curr_block->block_size:%d\n",curr_block->block_size);
                 if ((uintptr_t)new_block%ALIGNMENT!=0){
                   int rem = (uintptr_t)new_block%ALIGNMENT;
                   new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
-                  curr_block->block_size= curr_block->block_size+(ALIGNMENT-rem);
                 }
                 new_block->block_size= old_size - curr_block->block_size;
                 printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
                 new_block->allocated=0;
                 mutex_unlock(&malloc_lock);
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
-                }
             }
             printf("(alloc not found block to alloc)curr_block:%p\n",curr_block);
             printf("curr_block->block_size:%d\n",curr_block->block_size);
@@ -194,7 +190,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     return FAILURE;
 }
 
-void *hl_alloc2(void *heap, unsigned int block_size){
+void *hl_alloc2(void *heap, unsigned int block_size) {
     if (block_size ==0){
         return NULL;
     }
@@ -202,21 +198,18 @@ void *hl_alloc2(void *heap, unsigned int block_size){
     int i = sizeof(heap_header_t);
     int j = sizeof(block_info_t);
         block_info_t *curr_block =header->first_block;
-        while (i+block_size+j<=header->heap_size){
-            if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
+        while (i+block_size+j<header->heap_size){
+            if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
-                block_info_t *new_block = NULL;
-                if (ADD_BYTES(curr_block, curr_block->block_size)<ADD_BYTES(header, header->heap_size)){
-                new_block = ADD_BYTES(curr_block, curr_block->block_size);
+                block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
                 if ((uintptr_t)new_block%ALIGNMENT!=0){
                   int rem = (uintptr_t)new_block%ALIGNMENT;
                   new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
-                  curr_block->block_size= curr_block->block_size+(ALIGNMENT-rem);}
+                }
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
-                }
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
             }
             i+=curr_block->block_size;
@@ -250,14 +243,10 @@ void hl_release(void *heap, void *block) {
         printf("(release block to release) finder:%p\n",finder);
         printf("(release block to release) finder->allocated:%d\n",finder->allocated);
         finder->allocated=0;
-       block_info_t *next_block = NULL;
-        if (ADD_BYTES(finder, finder->block_size)<ADD_BYTES(header, header->heap_size)){
-           next_block = ADD_BYTES(finder, finder->block_size);
-            if ((uintptr_t)next_block%ALIGNMENT!=0){
-              int rem = (uintptr_t)next_block%ALIGNMENT;
-              next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
-              finder->block_size= finder->block_size+(ALIGNMENT-rem);
-            }
+        block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
+        if ((uintptr_t)next_block%ALIGNMENT!=0){
+            int rem = (uintptr_t)next_block%ALIGNMENT;
+            next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
         }
         next_block=find_block(header, next_block, next_block->block_size);
         printf("(release find next block)next_block:%p\n",next_block);
@@ -270,14 +259,14 @@ void hl_release(void *heap, void *block) {
             next_block=NULL;
             finder->block_size=new_size;
             printf("(release new size of coalesced) new_size:%d\n",new_size);
-        }
+    }
     }
     mutex_unlock(&malloc_lock);
 }
 
 void hl_release2(void *heap, void *block) {
     if (block==NULL){
-        return; 
+        return;
     }
     block = ADD_BYTES(block, -sizeof(block_info_t));
     heap_header_t *header = (heap_header_t *)heap;
@@ -285,14 +274,10 @@ void hl_release2(void *heap, void *block) {
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
     if (finder!=NULL) {
         finder->allocated=0;
-        block_info_t *next_block = NULL;
-        if (ADD_BYTES(finder, finder->block_size)<ADD_BYTES(header, header->heap_size)){
-           next_block = ADD_BYTES(finder, finder->block_size);
-            if ((uintptr_t)next_block%ALIGNMENT!=0){
-              int rem = (uintptr_t)next_block%ALIGNMENT;
-              next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
-              finder->block_size= finder->block_size+(ALIGNMENT-rem);
-            }
+        block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
+        if ((uintptr_t)next_block%ALIGNMENT!=0){
+            int rem = (uintptr_t)next_block%ALIGNMENT;
+            next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
         }
         next_block=find_block(header, next_block, next_block->block_size);
         if (next_block!=NULL && next_block->allocated==0){
@@ -301,7 +286,7 @@ void hl_release2(void *heap, void *block) {
             next_block->allocated=0;
             next_block=NULL;
             finder->block_size=new_size;
-        }
+    }
     }
 }
 
