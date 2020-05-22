@@ -242,7 +242,6 @@ void *hl_alloc2(void *heap, unsigned int block_size) {
                 }
                 printf("(alloc curr block after realign)curr_block->block_size:%d\n",curr_block->block_size);
                 printf("(finished alloc: curr block)curr_block:%p\n",curr_block);
-                new_block->allocated=0;
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
             }
             printf("(alloc not found block to alloc)curr_block:%p\n",curr_block);
