@@ -275,6 +275,9 @@ void hl_release(void *heap, void *block) {
             printf("(release new size of coalesced) new_size:%d\n",new_size);
     }
     }
+    printf("(end of release block to release) finder:%p\n",finder);
+    printf("(end of release block to release) finder->allocated:%d\n",finder->allocated);
+    printf("(end of release block to release) finder->block_size:%d\n",finder->block_size);
     mutex_unlock(&malloc_lock);
 }
 
@@ -309,6 +312,9 @@ void hl_release2(void *heap, void *block) {
             printf("(release new size of coalesced) new_size:%d\n",new_size);
     }
     }
+    printf("(end of release block to release) finder:%p\n",finder);
+    printf("(end of release block to release) finder->allocated:%d\n",finder->allocated);
+    printf("(end of release block to release) finder->block_size:%d\n",finder->block_size);
 }
 
 /* See the .h for the advertised behavior of this library function.
