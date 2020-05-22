@@ -148,15 +148,18 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     int i = sizeof(heap_header_t);
     int j = sizeof(block_info_t);
         block_info_t *curr_block =header->first_block;
-        while (i+block_size+j<header->heap_size){
-            if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
+        while (i+block_size+j<=header->heap_size){
+            if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
-                block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
+                block_info_t *new_block = NULL;
+                if (ADD_BYTES(curr_block, curr_block->block_size)<ADD_BYTES(header, header->heap_size)){
+                new_block = ADD_BYTES(curr_block, curr_block->block_size);
                 if ((uintptr_t)new_block%ALIGNMENT!=0){
                   int rem = (uintptr_t)new_block%ALIGNMENT;
                   new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
+                  curr_block->block_size= curr_block->block_size+(ALIGNMENT-rem);
                 }
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
@@ -173,8 +176,9 @@ void *hl_alloc(void *heap, unsigned int block_size) {
     mutex_unlock(&malloc_lock);
     return FAILURE;
 }
+}
 
-void *hl_alloc2(void *heap, unsigned int block_size) {
+void *hl_alloc2(void *heap, unsigned int block_size){
     if (block_size ==0){
         return NULL;
     }
@@ -182,29 +186,30 @@ void *hl_alloc2(void *heap, unsigned int block_size) {
     int i = sizeof(heap_header_t);
     int j = sizeof(block_info_t);
         block_info_t *curr_block =header->first_block;
-        while (i+block_size+j<header->heap_size){
-            if (!(curr_block->allocated) && j+block_size<curr_block->block_size){
+        while (i+block_size+j<=header->heap_size){
+            if (!(curr_block->allocated) && j+block_size<=curr_block->block_size){
                 int old_size = curr_block->block_size;
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
-                block_info_t *new_block = ADD_BYTES(curr_block, curr_block->block_size);
+                block_info_t *new_block = NULL;
+                if (ADD_BYTES(curr_block, curr_block->block_size)<ADD_BYTES(header, header->heap_size)){
+                new_block = ADD_BYTES(curr_block, curr_block->block_size);
                 if ((uintptr_t)new_block%ALIGNMENT!=0){
                   int rem = (uintptr_t)new_block%ALIGNMENT;
                   new_block=ADD_BYTES(new_block,(ALIGNMENT-rem));
-                }
+                  curr_block->block_size= curr_block->block_size+(ALIGNMENT-rem);}
                 new_block->block_size= old_size - curr_block->block_size;
                 new_block->allocated=0;
+                }
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
-            }
+                }
             i+=curr_block->block_size;
             curr_block=ADD_BYTES(curr_block, curr_block->block_size);
             if ((uintptr_t)curr_block%ALIGNMENT!=0){
                 int rem = (uintptr_t)curr_block%ALIGNMENT;
                 curr_block=ADD_BYTES(curr_block,(ALIGNMENT-rem));
-            }
-        }
-    return FAILURE;
-}
+            }}
+    return FAILURE;}
 
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.
@@ -223,11 +228,14 @@ void hl_release(void *heap, void *block) {
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
     if (finder!=NULL) {
         finder->allocated=0;
-        block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
-        if ((uintptr_t)next_block%ALIGNMENT!=0){
-            int rem = (uintptr_t)next_block%ALIGNMENT;
-            next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
-        }
+       block_info_t *next_block = NULL;
+        if (ADD_BYTES(finder, finder->block_size)<ADD_BYTES(header, header->heap_size)){
+           next_block = ADD_BYTES(finder, finder->block_size);
+            if ((uintptr_t)next_block%ALIGNMENT!=0){
+              int rem = (uintptr_t)next_block%ALIGNMENT;
+              next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
+              finder->block_size= finder->block_size+(ALIGNMENT-rem);}
+              }
         next_block=find_block(header, next_block, next_block->block_size);
         if (next_block!=NULL && next_block->allocated==0){
             int new_size=finder->block_size+next_block->block_size;
@@ -242,7 +250,7 @@ void hl_release(void *heap, void *block) {
 
 void hl_release2(void *heap, void *block) {
     if (block==NULL){
-        return;
+        return; 
     }
     block = ADD_BYTES(block, -sizeof(block_info_t));
     heap_header_t *header = (heap_header_t *)heap;
@@ -250,10 +258,14 @@ void hl_release2(void *heap, void *block) {
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
     if (finder!=NULL) {
         finder->allocated=0;
-        block_info_t *next_block = ADD_BYTES(finder , finder->block_size);
-        if ((uintptr_t)next_block%ALIGNMENT!=0){
-            int rem = (uintptr_t)next_block%ALIGNMENT;
-            next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
+        block_info_t *next_block = NULL;
+        if (ADD_BYTES(finder, finder->block_size)<ADD_BYTES(header, header->heap_size)){
+           next_block = ADD_BYTES(finder, finder->block_size);
+            if ((uintptr_t)next_block%ALIGNMENT!=0){
+              int rem = (uintptr_t)next_block%ALIGNMENT;
+              next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
+              finder->block_size= finder->block_size+(ALIGNMENT-rem);
+            }
         }
         next_block=find_block(header, next_block, next_block->block_size);
         if (next_block!=NULL && next_block->allocated==0){
@@ -261,8 +273,7 @@ void hl_release2(void *heap, void *block) {
             next_block->block_size=0;
             next_block->allocated=0;
             next_block=NULL;
-            finder->block_size=new_size;
-    }
+            finder->block_size=new_size;}
     }
 }
 
