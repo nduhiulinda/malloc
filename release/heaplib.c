@@ -165,6 +165,7 @@ void *hl_alloc(void *heap, unsigned int block_size) {
                 new_block->allocated=0;
                 mutex_unlock(&malloc_lock);
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
+                }
             }
             i+=curr_block->block_size;
             curr_block=ADD_BYTES(curr_block, curr_block->block_size);
@@ -175,7 +176,6 @@ void *hl_alloc(void *heap, unsigned int block_size) {
         }
     mutex_unlock(&malloc_lock);
     return FAILURE;
-}
 }
 
 void *hl_alloc2(void *heap, unsigned int block_size){
@@ -202,14 +202,16 @@ void *hl_alloc2(void *heap, unsigned int block_size){
                 new_block->allocated=0;
                 }
                 return ADD_BYTES(curr_block, sizeof(block_info_t));
-                }
+            }
             i+=curr_block->block_size;
             curr_block=ADD_BYTES(curr_block, curr_block->block_size);
             if ((uintptr_t)curr_block%ALIGNMENT!=0){
                 int rem = (uintptr_t)curr_block%ALIGNMENT;
                 curr_block=ADD_BYTES(curr_block,(ALIGNMENT-rem));
-            }}
-    return FAILURE;}
+            }
+        }
+    return FAILURE;
+}
 
 /* See the .h for the advertised behavior of this library function.
  * These comments describe the implementation, not the interface.
@@ -234,8 +236,9 @@ void hl_release(void *heap, void *block) {
             if ((uintptr_t)next_block%ALIGNMENT!=0){
               int rem = (uintptr_t)next_block%ALIGNMENT;
               next_block=ADD_BYTES(next_block,(ALIGNMENT-rem));
-              finder->block_size= finder->block_size+(ALIGNMENT-rem);}
-              }
+              finder->block_size= finder->block_size+(ALIGNMENT-rem);
+            }
+        }
         next_block=find_block(header, next_block, next_block->block_size);
         if (next_block!=NULL && next_block->allocated==0){
             int new_size=finder->block_size+next_block->block_size;
@@ -243,7 +246,7 @@ void hl_release(void *heap, void *block) {
             next_block->allocated=0;
             next_block=NULL;
             finder->block_size=new_size;
-    }
+        }
     }
     mutex_unlock(&malloc_lock);
 }
@@ -273,7 +276,8 @@ void hl_release2(void *heap, void *block) {
             next_block->block_size=0;
             next_block->allocated=0;
             next_block=NULL;
-            finder->block_size=new_size;}
+            finder->block_size=new_size;
+        }
     }
 }
 
