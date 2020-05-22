@@ -236,7 +236,6 @@ void *hl_alloc2(void *heap, unsigned int block_size) {
                     new_block->block_size= new_size;
                     new_block->allocated=0;
                     printf("(alloc divide block to alloc)new_block->block_size:%d\n",new_block->block_size);
-
                 }
                 if (new_size<=8){
                     curr_block->block_size += new_size;
