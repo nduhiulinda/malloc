@@ -423,12 +423,12 @@ int test13() {
     int *block1 = hl_alloc(heap, 20); 
     int *block2 = hl_alloc(heap, 20);
     int *block3 = hl_alloc(heap, 400);
-    printf("1\n");
+    printf("1. finished first allocs\n");
     fflush(NULL);
     hl_release(heap,block1);
     hl_release(heap,block2);
     hl_release(heap,block3);
-    printf("2\n");
+    printf("2. finished releases\n");
     fflush(NULL);
     int *block5=hl_alloc(heap, 20);
     printf("realloc 1\n");
