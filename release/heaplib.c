@@ -341,8 +341,8 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
         return ADD_BYTES(finder, sizeof(block_info_t));;
     }else{
         block_info_t* new_block=hl_alloc2(heap, new_size);
-        printf("(resize block to alloc coz didn't fit) new_block:%p\n",new_block);
-        printf("(resize block to alloc coz didn't fit) new_block->block_size:%d\n",new_block->block_size);
+        printf("(resize block to alloc coz didn't fit) new_block:%p\n",ADD_BYTES(new_block, sizeof(block_info_t));
+        printf("(resize block to alloc coz didn't fit) new_block->block_size:%d\n",ADD_BYTES(new_block, sizeof(block_info_t)->block_size);
         if (new_block!=NULL){
             new_block->allocated=1;
             new_block->block_size=new_size;
