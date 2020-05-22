@@ -223,7 +223,6 @@ void *hl_alloc2(void *heap, unsigned int block_size) {
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
                 int new_size = old_size - curr_block->block_size;
-        
                 printf("(alloc found block to alloc)curr_block->block_size:%d\n",curr_block->block_size);
                 if (new_size>8){
                     block_info_t * new_block = ADD_BYTES(curr_block, curr_block->block_size);
@@ -363,9 +362,9 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
     printf("(resize block to resize) finder:%p\n",finder);
     printf("(resize block to resize) finder->allocated:%d\n",finder->allocated);
     printf("(resize block to resize) finder->block_size:%d\n",finder->block_size);
-    new_size=new_size+sizeof(block_info_t);
-    if (finder->block_size>=new_size){
-        finder->block_size = new_size;
+    int new_block_size = new_size+sizeof(block_info_t);
+    if (finder->block_size>=new_block_size){
+        finder->block_size = new_block_size;
         mutex_unlock(&malloc_lock);
         return ADD_BYTES(finder, sizeof(block_info_t));;
     }else{
@@ -375,7 +374,7 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
         printf("(resize block to alloc coz didn't fit) new_block->block_size:%d\n",nnew_block->block_size);
         if (nnew_block!=NULL){
             nnew_block->allocated=1;
-            nnew_block->block_size=new_size;
+            nnew_block->block_size=new_block_size;
             //memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
             memmove(new_block,ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
             hl_release2(heap,finder);
