@@ -65,3 +65,5 @@ void hl_release(void *heap, void *block);
 void *hl_resize(void *heap, void *block, unsigned int new_size);
 
 #endif /*HEAPLIB_H*/
+
+
