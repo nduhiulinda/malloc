@@ -195,7 +195,7 @@ void *hl_alloc2(void *heap, unsigned int block_size) {
                 curr_block->block_size = block_size + j;
                 curr_block->allocated = 1;
                 int new_size = old_size - curr_block->block_size;
-\                if (new_size>8){
+                if (new_size>8){
                     block_info_t * new_block = ADD_BYTES(curr_block, curr_block->block_size);
                     if ((uintptr_t)new_block%ALIGNMENT!=0){
                         int rem = (uintptr_t)new_block%ALIGNMENT;
