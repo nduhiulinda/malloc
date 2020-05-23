@@ -309,22 +309,20 @@ void *hl_resize(void *heap, void *block, unsigned int new_size) {
     heap_header_t *header = (heap_header_t *)heap;
     block_info_t *main_block=(block_info_t *)block;
     block_info_t* finder = find_block(header,main_block,main_block->block_size);
-    int new_block_size = new_size+sizeof(block_info_t);
-    if (finder->block_size>=new_block_size){
-        finder->block_size = new_block_size;
+    new_size=new_size+sizeof(block_info_t);
+    if (finder->block_size>=new_size){
+        finder->block_size = new_size;
         mutex_unlock(&malloc_lock);
-        return ADD_BYTES(finder, sizeof(block_info_t));
+        return ADD_BYTES(finder, sizeof(block_info_t));;
     }else{
         block_info_t* new_block=hl_alloc2(heap, new_size);
-        block_info_t* nnew_block = ADD_BYTES(new_block, -sizeof(block_info_t));
-        if (nnew_block!=NULL){
-            nnew_block->allocated=1;
-            nnew_block->block_size=new_block_size;
-            // memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
-            memmove(new_block,ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
-            hl_release2(heap, ADD_BYTES(finder,-sizeof(block_info_t)));
+        if (new_block!=NULL){
+            new_block->allocated=1;
+            new_block->block_size=new_size;
+            memmove(ADD_BYTES(new_block,sizeof(block_info_t)),ADD_BYTES(finder,sizeof(block_info_t)), sizeof(char)*new_size);
+            hl_release2(heap,finder);
             mutex_unlock(&malloc_lock); 
-            return nnew_block; 
+            return ADD_BYTES(new_block, sizeof(block_info_t)); 
         }
     }
     mutex_unlock(&malloc_lock);
